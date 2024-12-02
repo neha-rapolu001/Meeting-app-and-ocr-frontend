@@ -132,7 +132,7 @@ const Dashboard = () => {
   }, [isSmallScreen]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'auto' }}>
       {/* TopBar */}
       <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 1000 }}>
         <TopBar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
