@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Card, Text, Title, Divider, Group, Grid, Table, Avatar, Badge, ScrollArea, Anchor, MantineProvider, createTheme } from "@mantine/core";
+import { Card, Text, Title, Divider, Group, Grid, Table, Avatar, Badge, ScrollArea, Anchor  } from "@mantine/core";
+import { useMediaQuery } from '@mantine/hooks';
 import { useNavigate } from "react-router-dom";
 import { tasks_view } from "../../api"; // Make sure your task API is correct
 import AppSidebar from "../../components/appSidebar"; // Make sure AppSidebar is imported
@@ -22,6 +23,8 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userFirstName, setUserFirstName] = useState("");
   const [mustGetTasks, setMustGetTasks] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Default open for large screens
+  const isSmallScreen = useMediaQuery('(max-width: 768px)'); // Detect small screens
 
   useEffect(() => {
     if (getCookie("user") == null && getCookie("priv") == null) {
@@ -118,27 +121,49 @@ const Dashboard = () => {
     }
   };
   
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  useEffect(() => {
+    if (isSmallScreen) {
+      setIsSidebarOpen(false); // Close sidebar on small screens
+    } else {
+      setIsSidebarOpen(true); // Open sidebar on large screens
+    }
+  }, [isSmallScreen]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "auto" }}>
-  {/* Fixed TopBar */}
-  <div style={{ position: "fixed", top: 0, left: 0, width: "100%", zIndex: 1000, backgroundColor: "#ffffff"}}>
-    <TopBar />
-  </div>
-
-  {isLoading ? (
-    <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", marginTop: "80px" }}>
-      <CssLoader />
-    </div>
-  ) : (
-    <div style={{ display: "flex", flex: 1, marginTop: "45px" }}>
-      {/* Sidebar */}
-      <div style={{ width: "150px", backgroundColor: "#f4f4f4", height: "100vh" }}>
-        <AppSidebar />
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+      {/* TopBar */}
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 1000 }}>
+        <TopBar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       </div>
 
+      {isLoading ? (
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '80px' }}>
+          <CssLoader />
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flex: 1 }}>
+          {/* Sidebar */}
+          {isSidebarOpen && (
+            <div
+              style={{
+                width: '150px',
+                backgroundColor: '#f4f4f4',
+                height: '100vh',
+                position: isSmallScreen ? 'fixed' : 'relative', // Fixed for small screens, relative for large screens
+                top: 0,
+                left: 0,
+                zIndex: isSmallScreen ? 999 : 'auto', // Higher z-index for small screens
+                transition: 'transform 0.3s ease', // Smooth open/close
+              }}
+            >
+              <AppSidebar />
+            </div>
+          )}
+
       {/* Main Content */}
-      <div style={{ flex: 1, padding: "2rem" }}>
+      <div style={{ flex: 1, padding: "2rem", marginTop:'45px' }}>
         <Grid gutter="md" style={{ padding: 0 }}>
           {/* Active Tasks Card */}
           <Grid.Col span={{ xs: '12', sm: '4', md: '4', lg: '4' }}>
