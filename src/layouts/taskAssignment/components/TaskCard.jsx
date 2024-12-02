@@ -84,57 +84,58 @@ const TaskCard = (props) => {
   };
 
   return (
-      <Card
-        className="outer-card card-margin"
-        style={{
-          backgroundColor: "#6776ab",
-          borderRadius: "7px",
-          width: "450px",
-          height: "150px",
-          padding: "20px 20px",
-          cursor: "pointer", // Keep the cursor style on hover for card interaction
-          position: "relative", // Keep position for fixed bottom section
-          transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out", // Smooth transition for scaling and shadow
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = "scale(1.05)"; // Scale up on hover
-          e.currentTarget.style.boxShadow = "0 10px 15px rgba(0, 0, 0, 0.1)"; // Add shadow on hover
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = "scale(1)"; // Reset scale
-          e.currentTarget.style.boxShadow = "none"; // Reset shadow
-        }}
-      >
-        {/* Modals */}
-        <InformationModal
-          id={taskId}
-          edit_task={EditTaskModal}
-          task={props.task}
-          isOpen={isInformationModalOpen && !isEditTaskModalOpen && !isDeleteTaskModalOpen}
-          toggle={toggleInformationModal}
-        />
-        <EditTaskModal
-          id={props.task}
-          isOpen={isEditTaskModalOpen}
-          toggle={toggleEditTaskModal}
-        />
-        <DeleteTaskModal
-          id={props.task}
-          isOpen={isDeleteTaskModalOpen}
-          toggle={toggleDeleteTaskModal}
-        />
+    <Card
+      className="outer-card card-margin"
+      style={{
+        backgroundColor: "#6776ab",
+        borderRadius: "6px",
+        width: "450px",
+        padding: "20px",
+        height: "160px",
+        cursor: "pointer",
+        position: "relative",
+        overflow: "hidden", // Ensures no content spills out
+        transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "scale(1.05)";
+        e.currentTarget.style.boxShadow = "0 10px 15px rgba(0, 0, 0, 0.1)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "scale(1)";
+        e.currentTarget.style.boxShadow = "none";
+      }}
+    >
+      {/* Modals */}
+      <InformationModal
+        id={taskId}
+        edit_task={EditTaskModal}
+        task={props.task}
+        isOpen={isInformationModalOpen && !isEditTaskModalOpen && !isDeleteTaskModalOpen}
+        toggle={toggleInformationModal}
+      />
+      <EditTaskModal
+        id={props.task}
+        isOpen={isEditTaskModalOpen}
+        toggle={toggleEditTaskModal}
+      />
+      <DeleteTaskModal
+        id={props.task}
+        isOpen={isDeleteTaskModalOpen}
+        toggle={toggleDeleteTaskModal}
+      />
     
         {/* Top Section (Similar to MeetingCard's header section with task name, status, and date) */}
         <Card.Section
-          onClick={onCardClick}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#6776ab",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
+        onClick={onCardClick}
+        style={{
+          padding: "10px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          position: "relative",
+        }}
+      >
           {/* Left Section: Task Date */}
           <Flex align="center" direction="row" gap="sm">
           <IconCalendar size={32} style={{color:"#e6e6e8"}} />
@@ -144,7 +145,17 @@ const TaskCard = (props) => {
           </Flex>
     
           {/* Center: Task Title */}
-          <Title order={4} style={{ color: '#e6e6e8', textAlign: "center", flex: 1 }}>
+          <Title
+          order={3}
+          style={{
+            color: "#e6e6e8",
+            textAlign: "center",
+            flex: 1,
+            whiteSpace: "nowrap", // Avoid text overflow
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
             {props.task.task_name}
           </Title>
     
@@ -170,21 +181,21 @@ const TaskCard = (props) => {
     
         {/* Bottom Section (Fixed like MeetingCard, showing status and extra details) */}
         <Card.Section
-          onClick={onCardClick}
-          style={{
-            position: "absolute",
-            bottom: 0, // Fixing this section to the bottom
-            left: 15,
-            right: 0,
-            padding: "10px",
-            backgroundColor: "#f2f4fa",
-            height: "100px",
-            display: "flex",
-            flexDirection: "row", // Row layout for two columns
-            justifyContent: "space-between", // Distribute space
-            borderTop: "1px solid #ccc",
-          }}
-        >
+        onClick={onCardClick}
+        style={{
+          position: "absolute",
+          bottom: 10, // Leave a small margin at the bottom
+          left: 16,
+          right: 16,
+          padding: "10px",
+          backgroundColor: "#f2f4fa",
+          display: "flex",
+          justifyContent: "space-between",
+          //alignItems: "center",
+          borderTop: "1px solid #ccc",
+          height: "90px", // Adjust to fit the content better
+        }}
+      >
           {/* Left Column: Status */}
           <div style={{ flex: 1 }}>
             <Text style={{ fontSize: "16px", color: "#2E2E2E" }}>
@@ -193,7 +204,7 @@ const TaskCard = (props) => {
           </div>
     
           {/* Right Column: People Assigned */}
-          <div style={{ flex: 1, textAlign: "right", marginRight: "40px" }}>
+          <div style={{ flex: 1, textAlign: "right" }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
               {employeeNames.slice(0, 2).map((name, index) => (
                 <Text key={index} style={{ fontSize: "14px", color: "#2E2E2E" }}>
