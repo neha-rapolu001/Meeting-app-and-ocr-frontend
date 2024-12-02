@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col } from "reactstrap";
-import { Title, Card, Button, Text, Select, Loader, TextInput, CloseButton } from "@mantine/core";
+import { Grid, Flex, Card, Title, Button, Text, Select, Loader, TextInput, CloseButton } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { useNavigate } from "react-router-dom";
 import { isSuperUser, getCookie, tasks_view, get_church_data } from "../../api";
 import AppSidebar from "../../components/appSidebar";
@@ -19,6 +20,18 @@ const Task = () => {
   const [churchDropdownOptions, setChurchDropdownOptions] = useState([]);
   const [selectedChurchDropdownOption, setSelectedChurchDropdownOption] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar toggle state
+  const isSmallScreen = useMediaQuery("(max-width: 768px)");
+
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+
+  useEffect(() => {
+    if (isSmallScreen) {
+      setIsSidebarOpen(false); // Close sidebar on small screens
+    } else {
+      setIsSidebarOpen(true); // Open sidebar on large screens
+    }
+  }, [isSmallScreen]);
 
   const toggleCreateTaskModal = () => {
     setIsCreateTaskModalOpen((prev) => !prev);
@@ -81,7 +94,7 @@ const Task = () => {
       }
 
       setTasks(filteredTasks);
-      setDisplayedTasks(filteredTasks); // Initialize displayed tasks
+      setDisplayedTasks(filteredTasks);
     } catch (error) {
       console.error("Error fetching tasks:", error);
     } finally {
@@ -106,24 +119,77 @@ const Task = () => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      <TopBar />
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'auto' }}>
+      {/* TopBar */}
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 1000 }}>
+        <TopBar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      </div>
 
-      <div style={{ display: "flex", flex: 1, flexDirection: "row", overflow: "hidden" }}>
-        <div style={{ width: "9%" }}>
-          <AppSidebar />
-        </div>
+        <div style={{ display: 'flex', flex: 1 }}>
+          {/* Sidebar */}
+          {isSidebarOpen && (
+            <div
+              style={{
+                width: '150px',
+                backgroundColor: '#f4f4f4',
+                height: '100vh',
+                position: isSmallScreen ? 'fixed' : 'relative', // Fixed for small screens, relative for large screens
+                top: 0,
+                left: 0,
+                zIndex: isSmallScreen ? 999 : 'auto', // Higher z-index for small screens
+                transition: 'transform 0.3s ease', // Smooth open/close
+              }}
+            >
+              <AppSidebar />
+            </div>
+          )}
 
-        <div style={{ flex: 1, overflow: "auto", backgroundColor: "#f5f5f5" }}>
+
+          <div
+            style={{
+              flex: 1,
+              overflow: "auto",
+              backgroundColor: "#f5f5f5",
+              marginTop: "40px",
+              marginLeft: isSmallScreen ? "auto" : "20px",
+              marginRight: isSmallScreen ? "auto" : "0",
+            }}
+          >
           <Card style={{ minHeight: "calc(100vh - 32px)" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems:"center", padding: "16px" }}>
-              <Title order={2} style={{ fontSize: "40px", fontWeight: "bold" }}>Tasks</Title>
-              <div style={{ display: "flex", gap: "16px", alignItems: "center", position: "absolute", right: "60px" }}>
+          <div
+              style={{
+                display: "flex",
+                flexDirection: isSmallScreen ? "column" : "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "26px",
+              }}
+            >
+              {/* Title */}
+              <Title
+
+                style={{
+                  fontSize: isSmallScreen ? "28px" : "40px",
+                  fontWeight: "bold",
+                  textAlign: isSmallScreen ? "center" : "left",
+                }}
+              >
+                Tasks
+              </Title>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: isSmallScreen ? "column" : "row",
+                  gap: "16px",
+                  alignItems: "center",
+                  marginTop: isSmallScreen ? "16px" : "0",
+                }}
+              >
                 <TextInput
                   placeholder="Search tasks..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{ minWidth: "250px" }}
+                  style={{ width: isSmallScreen ? "100%" : "250px" }}
                   rightSection={
                     <CloseButton
                       aria-label="Clear input"
@@ -133,6 +199,8 @@ const Task = () => {
                 />
                 {getCookie("priv") === "1" && (
                   <Select
+                    variant="filled"
+                    color="#65729e"
                     data={churchDropdownOptions}
                     value={selectedChurchDropdownOption}
                     onChange={(value) => setSelectedChurchDropdownOption(value)}
@@ -145,21 +213,26 @@ const Task = () => {
               </div>
             </div>
 
-            <Text style={{ padding: "16px" }}>
+            <div style={{ padding: "16px" }}>
               {isLoading ? (
                 <div style={{ textAlign: "center", marginTop: "20px" }}>
                   <Loader size="xl" />
                 </div>
               ) : (
-                <Row>
+                <Grid>
                   {displayedTasks.map((task) => (
-                    <Col key={task.id} xs={12} md={6} lg={4}>
+                    <Col key={task.id} span={{xs:'12', sm:'8', md:'4', lg:'4'}} 
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
                       <TaskCard task={task} setMustGetTasks={setMustGetTasks} />
                     </Col>
                   ))}
-                </Row>
+                </Grid>
               )}
-            </Text>
+            </div>
           </Card>
         </div>
       </div>

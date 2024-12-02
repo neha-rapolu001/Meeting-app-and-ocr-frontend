@@ -194,7 +194,16 @@ const Schedule = () => {
           )}
 
         {/* Main Content */}
-        <div style={{ flex: 1, overflow: "auto", backgroundColor: "#f5f5f5", marginTop:'40px', marginLeft:'20px' }}>
+        <div
+            style={{
+              flex: 1,
+              overflow: "auto",
+              backgroundColor: "#f5f5f5",
+              marginTop: "40px",
+              marginLeft: isSmallScreen ? "auto" : "20px",
+              marginRight: isSmallScreen ? "auto" : "0",
+            }}
+          >
           <Card style={{ minHeight: "calc(100vh - 32px)" }}>
             <div
               style={{
