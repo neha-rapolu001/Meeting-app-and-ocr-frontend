@@ -65,6 +65,7 @@ const AppSidebar = () => {
                 zIndex: 10,
                 gap: '10px',
                 paddingTop: '20px',
+                marginTop: '45px'
             }}
         >
             
