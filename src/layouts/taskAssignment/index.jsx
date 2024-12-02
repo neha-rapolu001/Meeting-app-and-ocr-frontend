@@ -213,13 +213,13 @@ const Task = () => {
               </div>
             </div>
 
-            <div style={{ padding: "16px" }}>
+            <Text>
               {isLoading ? (
                 <div style={{ textAlign: "center", marginTop: "20px" }}>
                   <Loader size="xl" />
                 </div>
               ) : (
-                <Grid>
+                <Row>
                   {displayedTasks.map((task) => (
                     <Col key={task.id} span={{xs:'12', sm:'8', md:'4', lg:'4'}} 
                       style={{
@@ -230,9 +230,9 @@ const Task = () => {
                       <TaskCard task={task} setMustGetTasks={setMustGetTasks} />
                     </Col>
                   ))}
-                </Grid>
+                </Row>
               )}
-            </div>
+            </Text>
           </Card>
         </div>
       </div>
