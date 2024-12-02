@@ -184,7 +184,7 @@ const TaskCard = (props) => {
         onClick={onCardClick}
         style={{
           position: "absolute",
-          bottom: 10, // Leave a small margin at the bottom
+          bottom: 0, // Leave a small margin at the bottom
           left: 16,
           right: 16,
           padding: "10px",
@@ -193,7 +193,7 @@ const TaskCard = (props) => {
           justifyContent: "space-between",
           //alignItems: "center",
           borderTop: "1px solid #ccc",
-          height: "90px", // Adjust to fit the content better
+          height: "100px", // Adjust to fit the content better
         }}
       >
           {/* Left Column: Status */}

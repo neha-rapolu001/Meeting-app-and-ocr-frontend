@@ -16,7 +16,7 @@ import {
   Label,
   Modal
 } from 'reactstrap';
-
+import { useMediaQuery } from "@mantine/hooks";
 import {  Radio,Container,Title,Button, Card,  NavLink, Text,TextInput, Textarea, MultiSelect, Group, Select } from "@mantine/core";
 import { useNavigate, useLocation } from "react-router-dom";
 import ReactCrop from 'react-image-crop';
@@ -91,6 +91,18 @@ const Meeting = (props) => {
   const [persons, setPersons] = useState([]);
   const [addPersonModalOpen, setAddPersonModalOpen] = useState(false);
   const [meetingTaskId, setMeetingTaskId] = useState("")
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar toggle state
+  const isSmallScreen = useMediaQuery("(max-width: 768px)");
+
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+
+  useEffect(() => {
+    if (isSmallScreen) {
+      setIsSidebarOpen(false); // Close sidebar on small screens
+    } else {
+      setIsSidebarOpen(true); // Open sidebar on large screens
+    }
+  }, [isSmallScreen]);
 
   // imageSrc contains image data to be processed and sent
   // with meeting_ocr request.
@@ -732,10 +744,30 @@ const handleSubmit = async (e) => {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
-    <TopBar />
-    <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-    <AppSidebar style={{ height: "100%" }} />
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'auto' }}>
+      {/* TopBar */}
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 1000 }}>
+        <TopBar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      </div>
+
+      <div style={{ display: 'flex', flex: 1 }}>
+        {/* Sidebar */}
+        {isSidebarOpen && (
+          <div
+            style={{
+              width: '0px',
+              backgroundColor: '#f4f4f4',
+              height: '100vh',
+              position: isSmallScreen ? 'fixed' : 'relative', // Fixed for small screens, relative for large screens
+              top: 0,
+              left: 0,
+              zIndex: isSmallScreen ? 999 : 'auto', // Higher z-index for small screens
+              transition: 'transform 0.3s ease', // Smooth open/close
+            }}
+          >
+            <AppSidebar />
+          </div>
+        )}
     <div style={{ flex: 1, overflowY: "auto" }}>
       <InvitePeopleModal
         isOpen={isInvitePeopleModalOpen}
@@ -755,7 +787,7 @@ const handleSubmit = async (e) => {
 
       <Container className="layout-container" style={{
           maxWidth: "1200px", // Increase this value to widen the container
-          width: "95%", // Ensures the layout adapts to screen size
+          width: isSmallScreen ? "auto" : "80%", // Ensures the layout adapts to screen size
           margin: "0 auto", // Centers the container
           padding: "20px", // Adjust padding if needed
         }}>
@@ -765,7 +797,7 @@ const handleSubmit = async (e) => {
             variant="outline"
             color = "#65729e"
             onClick={handleBackClick}
-            style={{ marginRight: "10px" }}
+            style={{ marginBottom: "0" }}
           >
             Back
           </Button>
@@ -774,16 +806,16 @@ const handleSubmit = async (e) => {
           </Title>
         </div>
           <Card.Section>
-            <Card style={{maxWidth: "70%", position: "relative", left: "15%", padding:"50px"}} className="my-card">
+            <Card style={{maxWidth: "80%", position: "relative", left: "15%",  padding:"50px"}} className="my-card">
               <Card.Section className="my-card-body">
-                <Row style={{width: "50%", position: "relative", left: "25%", textAlign: "center"}}>
+                <Row style={{left:'20px', position: "relative", textAlign: "center"}}>
                   <input type="file" hidden ref={imageRef} onChange={onImageChange} />
                   {
                     isInFirstScanState ?
                       <div>
                         <Card className="outer-card" style={{ color: customTheme.text }}>
                           <Card.Section>
-                          <div style={{ marginBottom: '10px' ,padding:"10px"}}>
+                          <div style={{ marginBottom: '10px' , padding:"10px"}}>
                           {isLoading &&<CircularProgress className="circular-progress" />}
                             <Button
                               variant="filled"
@@ -844,13 +876,14 @@ const handleSubmit = async (e) => {
             <Form>
               <Card className="my-card" style={{padding:"30px", margin:"10px"}}>
                 <Card.Section className="my-card-body">
-                  <Row xs={1} sm={1} md={2} lg={2} style={{
+                  <Row span={{xs:'1', sm:'1', md:'1', lg:'2'}} style={{
                       display: "flex",
-                      justifyContent: "space-between", // Creates space between columns
+                      //justifyContent: "space-between", // Creates space between columns
                       alignItems: "flex-start", // Ensures columns stay aligned at the top
                       gap: "30px", // Adds spacing between columns
+                      justifyContent: isSmallScreen? "center": "auto"
                     }}>
-                    <Col style={{ width: "48%" }}> 
+                    <Col style={{ width: isSmallScreen? "auto" : "48%" }}> 
                       <FormGroup>
                         <Label className="form-label" for="name" style={{ color: "black", fontSize: "16px", fontFamily: "Arial, sans-serif", fontWeight: "bold"}}>Meeting Name*</Label>
                         <TextInput className="form-input" type="text" name="name" id="name" value={name} onChange={handleNameChange} required />
@@ -872,7 +905,7 @@ const handleSubmit = async (e) => {
                         <div id="timeError" class="error-message"></div>
                       </FormGroup>
                     </Col>
-                    <Col style={{ width: "48%" }}> 
+                    <Col style={{ width: isSmallScreen? "auto" : "48%" }}> 
                       <FormGroup>
                         <Label className="form-label" for="type" style={{ color: "black", fontSize: "16px", fontFamily: "Arial, sans-serif", fontWeight: "bold"}}>Meeting Type*</Label>
                         <Card className="my-card my-border" style={{padding:"30px"}}>
@@ -1052,13 +1085,15 @@ const handleSubmit = async (e) => {
               </Card>
               <Card className="my-card"  style={{padding:"30px", margin:"5px"}}>
                 <Card.Section className="my-card-body">
-                  <Row style={{
+                  <Row span={{xs:'1', sm:'1', md:'1', lg:'2'}}
+                  style={{
                     display: "flex",
-                    justifyContent: "space-between",
+                    //justifyContent: "space-between",
                     alignItems: "flex-start",
                     gap: "30px", // Space between columns
+                    justifyContent: isSmallScreen? "center": "auto"
                   }}>
-                  <Col style={{ width: "48%" }}> 
+                  <Col style={{ width: isSmallScreen? "auto" : "48%" }}> 
                   <FormGroup>
                     {/* <FormGroup style={{width: "50%", position: "relative", left: "25%"}}> */}
                       <Label className="form-label" for="notes" style={{ color: "black", fontSize: "16px", fontFamily: "Arial, sans-serif", fontWeight: "bold"}}>Meeting Notes*</Label>
@@ -1070,7 +1105,6 @@ const handleSubmit = async (e) => {
                         autosize
                         minRows={20}
                         maxRows={20}
-                        style={{ width: '100%' }}
                       />
                       <div id="noteError" class="error-message"></div>
                       <Col>
@@ -1143,11 +1177,11 @@ const handleSubmit = async (e) => {
                   }}
                 >
                   <Col style={{ maxWidth: "4%" }}>Action</Col>
-                  <Col style={{ maxWidth: "17%" }}>Task Name</Col>
-                  <Col style={{ maxWidth: "14%" }}>Due Date</Col>
-                  <Col style={{ maxWidth: "20%" }}>Assign To</Col>
-                  <Col style={{ maxWidth: "13%"}}>Priority</Col>
-                  <Col style={{ maxWidth: "23%" }}>Details</Col>
+                  <Col className="mantine-visible-from-xl" style={{ maxWidth: "17%" }}>Task Name</Col>
+                  <Col className="mantine-visible-from-xl" style={{ maxWidth: "14%" }}>Due Date</Col>
+                  <Col className="mantine-visible-from-xl" style={{ maxWidth: "20%" }}>Assign To</Col>
+                  <Col className="mantine-visible-from-xl" style={{ maxWidth: "13%"}}>Priority</Col>
+                  <Col className="mantine-visible-from-xl" style={{ maxWidth: "23%" }}>Details</Col>
                 </Row>
 
                 {/* Task Rows */}
@@ -1202,34 +1236,35 @@ const handleSubmit = async (e) => {
                     {/* Assign To Column */}
                     <div style={{ flex: "1 1 21%" }}>
                       <FormGroup>
-                        <MultiSelect
-                          data={people.map((person) => ({
-                            value: person.id.toString(),
-                            label: person.name,
-                          }))}
-                          value={task.employees.map(String)}
-                          onChange={(selectedValues) =>
-                            handleMeetingTasksChange(index, "employees", selectedValues)
-                          }
-                          searchable
-                          placeholder="Select employee(s)"
-                          nothingFoundMessage={
-                            <>
-                              No matches found.{" "}
-                              <Button
-                                variant="outline"
-                                color="blue"
-                                size="xs"
-                                onClick={toggleNewPersonModal}
-                              >
-                                Add Person
-                              </Button>
-                            </>
-                          }
-                          clearable
-                          transition="pop-top-left"
-                          style={{ width: "100%" }}
-                        />
+                      <MultiSelect
+                        data={(people || []).map((person) => ({
+                          value: person.id?.toString(),
+                          label: person.name || "Unnamed Person",
+                        }))}
+                        value={(task.employees || []).map(String)}
+                        onChange={(selectedValues) =>
+                          handleMeetingTasksChange(index, "employees", selectedValues)
+                        }
+                        searchable
+                        placeholder="Select employee(s)"
+                        nothingFoundMessage={
+                          <>
+                            No matches found.{" "}
+                            <Button
+                              variant="outline"
+                              color="blue"
+                              size="xs"
+                              onClick={toggleNewPersonModal}
+                            >
+                              Add Person
+                            </Button>
+                          </>
+                        }
+                        clearable
+                        transition="pop-top-left"
+                        style={{ width: "100%" }}
+                      />
+
                       </FormGroup>
                     </div>
 

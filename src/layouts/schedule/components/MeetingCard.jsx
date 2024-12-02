@@ -259,7 +259,7 @@ const MeetingCard = (props) => {
     onClick={handleEventClick}
     style={{
       position: "absolute",
-      bottom: 10, // Leave a small margin at the bottom
+      bottom: 0, // Leave a small margin at the bottom
       left: 16,
       right: 16,
       padding: "10px",
@@ -268,7 +268,7 @@ const MeetingCard = (props) => {
       justifyContent: "space-between",
       //alignItems: "center",
       borderTop: "1px solid #ccc",
-      height: "120px", // Adjust to fit the content better
+      height: "130px", // Adjust to fit the content better
     }}
   >
     {/* Left Column: Type and Agenda */}
