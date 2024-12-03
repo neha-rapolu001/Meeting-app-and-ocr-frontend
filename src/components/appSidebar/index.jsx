@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import { Menu, MenuItem } from "react-pro-sidebar";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link} from "react-router-dom";
+import { createPortal } from 'react-dom';
 import { logout, getCookie, updateCookie, isSuperUser, isAdmin, isLeader } from "../../api";
 import { Text, Box } from "@mantine/core"; // Mantine components
-import { useHover } from '@mantine/hooks'; // Mantine's useHover hook
+import { useHover, useMediaQuery } from '@mantine/hooks'; // Mantine's useHover hook
 import {
     SpeedOutlined as SpeedOutlinedIcon,
     ChatBubbleOutline as ChatBubbleOutlineIcon,  // Updated icon
@@ -23,6 +24,7 @@ import {
 const AppSidebar = () => {
     const navigate = useNavigate();
     const [isHovered, setIsHovered] = React.useState(false);
+    const isLargeScreen = useMediaQuery('(min-width: 1024px)');
 
     useEffect(() => {
         if (getCookie("user") == null && getCookie("priv") == null) {
@@ -60,12 +62,15 @@ const AppSidebar = () => {
                 justifyContent: 'flex-start',
                 alignItems: 'center',
                 padding: 0,
-                position: 'fixed',
+                position: 'absolute',
                 textAlign: "center",
                 zIndex: 10,
                 gap: '10px',
                 paddingTop: '20px',
-                marginTop: '45px'
+                paddingBottom: "50px",
+                marginTop: '45px',
+                overflowY: 'auto',  // Keep overflow enabled
+                //paddingRight: '10px', // Avoid scrolling conflict with hoverable areas
             }}
         >
             
@@ -258,56 +263,94 @@ const HoverableMenuItem = ({ link, icon, text, state=null }) => {
 
 // SubMenuItem component
 const SubMenuItem = ({ icon, text, submenu }) => {
-    const { hovered, ref } = useHover();
+    const [isHovered, setIsHovered] = React.useState(false);
+    const [submenuHovered, setSubmenuHovered] = React.useState(false);
+    const [menuPosition, setMenuPosition] = React.useState({ top: 0, left: 0 });
+
+    const ref = React.useRef(null);
+
+    const calculatePosition = () => {
+        if (ref.current) {
+            const rect = ref.current.getBoundingClientRect();
+            setMenuPosition({
+                top: rect.top + window.scrollY -15,
+                left: rect.right,
+            });
+        }
+    };
+
+    const showSubmenu = () => {
+        setIsHovered(true);
+        calculatePosition();
+    };
+
+    const hideSubmenu = () => {
+        setTimeout(() => {
+            if (!submenuHovered) {
+                setIsHovered(false);
+            }
+        }, 1); // Short delay to allow submenu hover
+    };
 
     return (
-        <div style={{ position: 'relative' }} ref={ref}>
+        <div
+            ref={ref}
+            onMouseEnter={showSubmenu}
+            onMouseLeave={hideSubmenu}
+            style={{ position: 'relative' }}
+        >
             <MenuItem
                 style={{
-                    backgroundColor: hovered ? '#0a0a0a' : 'transparent',
-                    color: hovered ? '#ffffff' : '#bfbfbf',
+                    backgroundColor: isHovered ? '#0a0a0a' : 'transparent',
+                    color: isHovered ? '#ffffff' : '#bfbfbf',
                     borderRadius: '4px',
                     transition: 'background-color 0.3s ease',
-                    padding: '15px',  // Increased padding for better spacing
+                    padding: '15px',
                     margin: '5px 0',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
                     textAlign: 'center',
-                    minHeight: '80px',  // Ensure sufficient height
-                    whiteSpace: 'nowrap',  // Prevent text from wrapping
+                    minHeight: '80px',
+                    whiteSpace: 'nowrap',
                 }}
-                className="hoverable-submenu-item"
             >
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     {icon}
-                    <Text style={{ marginTop: '8px', fontSize: '14px' }}>{text}</Text> {/* Adjust margin and font size */}
+                    <Text style={{ marginTop: '8px', fontSize: '14px' }}>{text}</Text>
                 </div>
             </MenuItem>
 
-            {hovered && (
-                <div
-                    style={{
-                        position: 'absolute',
-                        top: -15,
-                        left: '105px',
-                        backgroundColor: '#39383b',
-                        borderRadius: '4px',
-                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                        zIndex: 999,
-                        padding: '10px 0',
-                        minWidth: '150px',
-                    }}
-                >
-                    <Menu style={{ display: 'flex', flexDirection: 'column' }}>
-                        {submenu}
-                    </Menu>
-                </div>
+            {isHovered && submenu && (
+                createPortal(
+                    <div
+                        onMouseEnter={() => setSubmenuHovered(true)}
+                        onMouseLeave={() => setSubmenuHovered(false)}
+                        style={{
+                            position: 'absolute',
+                            top: `${menuPosition.top}px`,
+                            left: `${menuPosition.left}px`,
+                            backgroundColor: '#39383b',
+                            borderRadius: '4px',
+                            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                            zIndex: 999,
+                            padding: '10px 0',
+                            minWidth: '150px',
+                        }}
+                    >
+                        <Menu style={{ display: 'flex', flexDirection: 'column' }}>
+                            {submenu}
+                        </Menu>
+                    </div>,
+                    document.body
+                )
             )}
         </div>
     );
 };
+
+
 
 
 export default AppSidebar;
