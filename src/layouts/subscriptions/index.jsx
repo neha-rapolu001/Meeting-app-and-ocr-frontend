@@ -148,6 +148,7 @@ const SubscriptionsPage = () => {
           <Card
             style={{
               width: isSmallScreen ? "100%" : "80%",
+              minWidth: "600px",
               maxWidth: "1400px",
               marginLeft: isSmallScreen? "0" : "170px",
               padding: "20px",
@@ -165,7 +166,7 @@ const SubscriptionsPage = () => {
               <Title order={1} ml={10} mb={20}>
                 Subscriptions
               </Title>
-              <Button ml={10} mb={20} variant="filled" color="#6776ab" onClick={() => toggleModal()}>
+              <Button mb={20} variant="filled" color="#6776ab" onClick={() => toggleModal()}>
                 Add Subscription
               </Button>
             </div>

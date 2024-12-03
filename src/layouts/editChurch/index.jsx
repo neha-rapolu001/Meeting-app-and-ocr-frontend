@@ -159,7 +159,7 @@ const ChurchList = () => {
           <Card
             style={{
               width: isSmallScreen ? "100%" : "80%",
-              minWidth: "700px",
+              minWidth: "800px",
               maxWidth: "1400px",
               boxSizing: "border-box",
               padding: "20px",

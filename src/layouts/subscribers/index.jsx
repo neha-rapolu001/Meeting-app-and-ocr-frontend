@@ -219,6 +219,7 @@ const Subscribers = () => {
           <Card 
             style={{ 
               width: isSmallScreen ? "100%" : "80%",
+              minWidth: "800px",
               maxWidth: "1400px", 
               marginLeft: isSmallScreen? "0" : "170px",
               padding: "20px",

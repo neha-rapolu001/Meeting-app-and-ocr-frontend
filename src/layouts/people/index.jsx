@@ -161,6 +161,7 @@ const PersonPage = () => {
           <Card
             style={{
               width: isSmallScreen ? "100%" : "80%",
+              minWidth: "600px",
               maxWidth: "1400px",
               marginLeft: isSmallScreen? "0" : "170px",
               padding: "20px",
