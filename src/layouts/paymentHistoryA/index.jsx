@@ -5,7 +5,7 @@ import TopBar from "../../components/appTopBar";
 import { useNavigate } from 'react-router-dom';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { Table, Button, Title, Card, TextInput, Group, Modal, Loader } from '@mantine/core';
+import { Table, Button, Title, Card, TextInput, Group, Modal, Loader, Text } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 
 const PaymentHistory = () => {
@@ -220,9 +220,11 @@ const PaymentHistory = () => {
                           <Table.Td>{payment.email}</Table.Td>
                           <Table.Td>{formatDateTime(payment.date)}</Table.Td>
                           <Table.Td>{'$' + payment.amount}</Table.Td>
-                          <Table.Td><Text color={payment.is_success ? "green" : "red"}>
-                            {payment.is_success ? "Success" : "Failed"}
-                          </Text></Table.Td>
+                          <Table.Td>
+                            <Text color={payment.is_success ? "green" : "red"}>
+                              {payment.is_success ? "Success" : "Failed"}
+                            </Text>
+                          </Table.Td>
                           <Table.Td>
                             <Button variant="light" color="blue" onClick={() => handlePaymentSelect(payment)}>Show Card Details</Button>
                           </Table.Td>
