@@ -61,11 +61,19 @@ const Signup = () => {
     });
 
     const handleChange = event => {
-        const { name, value } = event.target;
+      const { name, value } = event.target;
+      if (name === 'ph_no') {
+        const cleanedValue = value.replace(/[\s-]/g, ''); // Remove spaces and hyphens
+        setFormData(prevState => ({
+            ...prevState,
+            [name]: cleanedValue,
+        }));
+      } else {
         setFormData(prevState => ({
             ...prevState,
             [name]: value,
         }));
+    }
     };
 
     useEffect(() => {
