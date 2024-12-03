@@ -11,6 +11,7 @@ import {
   delete_user,
   isSuperUser,
 } from "../../../src/api";
+import { useMediaQuery } from '@mantine/hooks';
 
 const Subscribers = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -23,9 +24,21 @@ const Subscribers = () => {
   const [deleteChurchId, setDeleteChurchId] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [churchToDelete, setChurchToDelete] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
   const toggleEditModal = () => setEditModal(!editModal);
   const toggleDeleteModal = () => setDeleteModal(!deleteModal);
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  useEffect(() => {
+    if (isSmallScreen) {
+      setIsSidebarOpen(false);
+    } else {
+      setIsSidebarOpen(true);
+    }
+  }, [isSmallScreen]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -170,16 +183,29 @@ const Subscribers = () => {
   ));
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-      }}
-    >
-      <TopBar />
-      <div style={{ display: "flex", flexGrow: 1 }}>
-        <AppSidebar />
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'auto' }}>
+      {/* TopBar */}
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 1000 }}>
+        <TopBar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      </div>
+        <div style={{ display: 'flex', flex: 1 }}>
+          {/* Sidebar */}
+          {isSidebarOpen && (
+            <div
+              style={{
+                width: '0',
+                backgroundColor: '#f4f4f4',
+                height: '100vh',
+                position: isSmallScreen ? 'fixed' : 'relative', // Fixed for small screens, relative for large screens
+                top: 0,
+                left: 0,
+                zIndex: isSmallScreen ? 999 : 'auto', // Higher z-index for small screens
+                transition: 'transform 0.3s ease', // Smooth open/close
+              }}
+            >
+              <AppSidebar />
+            </div>
+          )}
         <div
           style={{
             flex: 1,
@@ -187,9 +213,18 @@ const Subscribers = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            marginTop:"40px",
           }}
         >
-          <Card style={{ width: "80%", maxWidth: "1400px", marginLeft: "170px" }}>
+          <Card 
+            style={{ 
+              width: isSmallScreen ? "100%" : "80%",
+              maxWidth: "1400px", 
+              marginLeft: isSmallScreen? "0" : "170px",
+              padding: "20px",
+              boxSizing: "border-box",
+            }}
+          >
             <div
               style={{
                 display: "flex",

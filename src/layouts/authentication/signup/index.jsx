@@ -16,6 +16,7 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import { signup, addChurch as create_church, get_subscriptions, chargeCard, login, check_church_exists, logout, check_email_exists } from '../../../api';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { useMediaQuery } from '@mantine/hooks';
 
 const Signup = () => {
     const [subscriptions, setSubscriptions] = useState([]);
@@ -33,6 +34,7 @@ const Signup = () => {
     const [emailError, setEmailError] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [showThankYouModal, setShowThankYouModal] = useState(false);
+    const isSmallScreen = useMediaQuery('(max-width: 1068px)');
 
 
     useEffect(() => {
@@ -233,6 +235,9 @@ const Signup = () => {
       }}
     >
         {/* Background overlay circles */}
+        <>
+      {!isSmallScreen && (
+        <>
       <div style={{
         position: "absolute",
         top: "10%",
@@ -253,14 +258,17 @@ const Signup = () => {
         borderRadius: "50%",
         zIndex: 1
       }} />
+      </>
+      )}
+      </>
       <Box
         style={{
-          width: 700,
-          height: 1200,
+          width: isSmallScreen ? 500 : 700,
+          height: isSmallScreen ? 1300 : 1200,
           padding: 40,
           background: "white",
           boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
-          borderRadius: "50%",
+          borderRadius: "45%",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",

@@ -7,6 +7,7 @@ import {
 import AppSidebar from "../../components/appSidebar";
 import TopBar from "../../components/appTopBar";
 import { Card, Table, Button, TextInput, Text, Modal, Title, Group, Loader} from "@mantine/core";
+import { useMediaQuery } from '@mantine/hooks';
 
 const ChurchList = () => {
   const [churches, setChurches] = useState([]);
@@ -17,10 +18,13 @@ const ChurchList = () => {
   const [errors, setErrors] = useState({});
   const [churchToDelete, setChurchToDelete] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
   useEffect(() => {
     fetchChurchData();
   }, []);
+  
 
   const fetchChurchData = () => {
     setIsLoading(true);
@@ -34,6 +38,16 @@ const ChurchList = () => {
         setIsLoading(false);
       });
   };
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  useEffect(() => {
+    if (isSmallScreen) {
+      setIsSidebarOpen(false);
+    } else {
+      setIsSidebarOpen(true);
+    }
+  }, [isSmallScreen]);
 
   const toggleEditModal = () => setIsEditModalOpen(!isEditModalOpen);
 
@@ -94,13 +108,12 @@ const ChurchList = () => {
       <Table.Td>{church.ph_no || "N/A"}</Table.Td>
       <Table.Td>{church.email || "N/A"}</Table.Td>
       <Table.Td>
-        <Button variant="light" color="blue" onClick={() => handleEdit(church)}>
+        <Button variant="light" color="blue" style={{ marginRight: "10px" }} onClick={() => handleEdit(church)}>
           Edit
         </Button>
         <Button
           variant="outline"
           color="red"
-          style={{ marginLeft: "10px" }}
           onClick={() => openDeleteModal(church)}
         >
           Delete
@@ -110,38 +123,47 @@ const ChurchList = () => {
   ));
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        margin: 0,
-        padding: 0,
-        width: "100%",
-        boxSizing: "border-box",
-      }}
-    >
-      <TopBar />
-      <div style={{ display: "flex", flexGrow: 1, width: "100%" }}>
-        <AppSidebar />
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'auto' }}>
+      {/* TopBar */}
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 1000 }}>
+        <TopBar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      </div>
+        <div style={{ display: 'flex', flex: 1 }}>
+          {/* Sidebar */}
+          {isSidebarOpen && (
+            <div
+              style={{
+                width: '0',
+                backgroundColor: '#f4f4f4',
+                height: '100vh',
+                position: isSmallScreen ? 'fixed' : 'relative', // Fixed for small screens, relative for large screens
+                top: 0,
+                left: 0,
+                zIndex: isSmallScreen ? 999 : 'auto', // Higher z-index for small screens
+                transition: 'transform 0.3s ease', // Smooth open/close
+              }}
+            >
+              <AppSidebar />
+            </div>
+          )}
         <div
           style={{
             flex: 1,
-            margin: 0,
             padding: "20px",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "flex-start",
+            marginTop:"40px",
           }}
         >
           <Card
             style={{
-              width: "80%",
+              width: isSmallScreen ? "100%" : "80%",
+              minWidth: "700px",
               maxWidth: "1400px",
               boxSizing: "border-box",
               padding: "20px",
-              marginLeft: "170px",
+              marginLeft: isSmallScreen? "0" : "170px",
             }}
           >
             <div

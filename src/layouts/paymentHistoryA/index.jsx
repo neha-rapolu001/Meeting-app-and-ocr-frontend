@@ -5,7 +5,8 @@ import TopBar from "../../components/appTopBar";
 import { useNavigate } from 'react-router-dom';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { Table, Button, Title, Card, TextInput, Group, Modal } from '@mantine/core';  // Importing Mantine Table
+import { Table, Button, Title, Card, TextInput, Group, Modal, Loader } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 
 const PaymentHistory = () => {
   const history = useNavigate();
@@ -20,10 +21,22 @@ const PaymentHistory = () => {
   });
   const stripe = useStripe();
   const elements = useElements();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
   useEffect(() => {
     fetchPayments();
   }, []);
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  useEffect(() => {
+    if (isSmallScreen) {
+      setIsSidebarOpen(false);
+    } else {
+      setIsSidebarOpen(true);
+    }
+  }, [isSmallScreen]);
 
   const fetchPayments = async () => {
     try {
@@ -120,10 +133,29 @@ const PaymentHistory = () => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100%" }}>
-      <TopBar />
-      <div style={{ display: "flex", flexGrow: 1, width: "100%" }}>
-        <AppSidebar /> {/* Sidebar is a part of the layout */}
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'auto' }}>
+      {/* TopBar */}
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 1000 }}>
+        <TopBar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      </div>
+        <div style={{ display: 'flex', flex: 1 }}>
+          {/* Sidebar */}
+          {isSidebarOpen && (
+            <div
+              style={{
+                width: '0',
+                backgroundColor: '#f4f4f4',
+                height: '100vh',
+                position: isSmallScreen ? 'fixed' : 'relative', // Fixed for small screens, relative for large screens
+                top: 0,
+                left: 0,
+                zIndex: isSmallScreen ? 999 : 'auto', // Higher z-index for small screens
+                transition: 'transform 0.3s ease', // Smooth open/close
+              }}
+            >
+              <AppSidebar />
+            </div>
+          )}
         <div
           style={{
             flex: 1,
@@ -132,16 +164,18 @@ const PaymentHistory = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center", // Center the content horizontally within available space
-            justifyContent: "flex-start", // Align the content at the top
+            marginTop:"40px",
           }}
         >
           {/* Removed the Card component */}
           <Card
             style={{
-              width: "80%", // The content area takes up 80% of the available space
+              width: isSmallScreen ? "100%" : "80%",
+              minWidth: "1000px",
               maxWidth: "1400px", // Cap the width for larger screens
               boxSizing: "border-box",
-              marginLeft: "170px", // Offset for sidebar width (replace with actual sidebar width)
+              padding: "20px",
+              marginLeft: isSmallScreen? "0" : "170px",
             }}
           >
             <div
@@ -155,16 +189,18 @@ const PaymentHistory = () => {
               <Title order={1} ml={10} style={{ marginBottom: "20px" }}>
               Payment History
             </Title>
-              <Button variant="filled" color="blue" onClick={toggleCreatePaymentForm}>Update Payment Method</Button>
+              <Button mb={20} variant="filled" color="#6776ab" onClick={toggleCreatePaymentForm}>Update Payment Method</Button>
             </div>
 
             {isLoading ? (
-              <p>Loading...</p>
+              <div style={{ textAlign: "center", marginTop: "20px" }}>
+                <Loader size="xl" />
+              </div>
             ) : (
               <div>
                 {payments.length === 0 && <p>No payments found.</p>}
                 {payments.length > 0 && (
-                  <Table striped style={{ width: "100%" }}>
+                  <Table striped style={{ width: "100%", borderCollapse: "collapse" }}>
                     <Table.Thead>
                       <Table.Tr>
                         <Table.Th>Transaction ID</Table.Th>
@@ -184,9 +220,11 @@ const PaymentHistory = () => {
                           <Table.Td>{payment.email}</Table.Td>
                           <Table.Td>{formatDateTime(payment.date)}</Table.Td>
                           <Table.Td>{'$' + payment.amount}</Table.Td>
-                          <Table.Td>{payment.is_success ? 'Success' : 'Failed'}</Table.Td>
+                          <Table.Td><Text color={payment.is_success ? "green" : "red"}>
+                            {payment.is_success ? "Success" : "Failed"}
+                          </Text></Table.Td>
                           <Table.Td>
-                            <Button variant="filled" color="blue" onClick={() => handlePaymentSelect(payment)}>Show Card Details</Button>
+                            <Button variant="light" color="blue" onClick={() => handlePaymentSelect(payment)}>Show Card Details</Button>
                           </Table.Td>
                         </Table.Tr>
                       ))}

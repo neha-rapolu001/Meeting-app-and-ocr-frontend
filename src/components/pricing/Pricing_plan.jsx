@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { get_subscriptions } from "../../api";
 import { Container, Box, Card, Title, Text, Button, Group } from "@mantine/core";
+import { useMediaQuery } from '@mantine/hooks';
 
 const Pricing_plan = () => {
   const [plans, setPlans] = useState([]);
   const navigate = useNavigate();
+  const isSmallScreen = useMediaQuery('(max-width: 1068px)');
 
   useEffect(() => {
     get_subscriptions()
@@ -39,6 +41,9 @@ const Pricing_plan = () => {
       }}
     >
       {/* Background overlay circles */}
+      <>
+      {!isSmallScreen && (
+        <>
       <div style={{
         position: "absolute",
         top: "10%",
@@ -59,9 +64,12 @@ const Pricing_plan = () => {
         borderRadius: "50%",
         zIndex: 1
       }} />
+      </>
+      )}
+      </>
       <Box
         style={{
-          width: 800,
+          width: isSmallScreen ? 400 : 800,
           padding: 40,
           background: "white",
           boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",

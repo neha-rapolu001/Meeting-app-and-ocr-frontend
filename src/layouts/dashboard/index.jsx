@@ -23,8 +23,8 @@ const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [userFirstName, setUserFirstName] = useState("");
   const [mustGetTasks, setMustGetTasks] = useState(true);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Default open for large screens
-  const isSmallScreen = useMediaQuery('(max-width: 768px)'); // Detect small screens
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
   useEffect(() => {
     if (getCookie("user") == null && getCookie("priv") == null) {

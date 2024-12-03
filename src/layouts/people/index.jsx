@@ -7,11 +7,14 @@ import {
   TextInput,
   Text,
   Card,
-  Group
+  Group,
+  Loader,
+  ScrollArea
 } from "@mantine/core";
 import { person_view, add_person, delete_person, getCookie } from '../../api';
 import AppSidebar from '../../components/appSidebar';
 import TopBar from "../../components/appTopBar";
+import { useMediaQuery } from '@mantine/hooks';
 
 const PersonPage = () => {
   const [persons, setPersons] = useState([]);
@@ -26,10 +29,22 @@ const PersonPage = () => {
   const [validationErrors, setValidationErrors] = useState({});
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [personToDelete, setPersonToDelete] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
   useEffect(() => {
     fetchPersons();
   }, []);
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  useEffect(() => {
+    if (isSmallScreen) {
+      setIsSidebarOpen(false);
+    } else {
+      setIsSidebarOpen(true);
+    }
+  }, [isSmallScreen]);
 
   const fetchPersons = () => {
     person_view(getCookie('church'))
@@ -108,32 +123,47 @@ const PersonPage = () => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100%" }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'auto' }}>
       {/* TopBar */}
-      <TopBar />
-
-      {/* Main Layout */}
-      <div style={{ display: "flex", flexGrow: 1, width: "100%" }}>
-        {/* Sidebar */}
-        <AppSidebar />
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 1000 }}>
+        <TopBar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      </div>
+        <div style={{ display: 'flex', flex: 1 }}>
+          {/* Sidebar */}
+          {isSidebarOpen && (
+            <div
+              style={{
+                width: '0',
+                backgroundColor: '#f4f4f4',
+                height: '100vh',
+                position: isSmallScreen ? 'fixed' : 'relative', // Fixed for small screens, relative for large screens
+                top: 0,
+                left: 0,
+                zIndex: isSmallScreen ? 999 : 'auto', // Higher z-index for small screens
+                transition: 'transform 0.3s ease', // Smooth open/close
+              }}
+            >
+              <AppSidebar />
+            </div>
+          )}
 
         {/* Main Content */}
         <div
           style={{
             flex: 1,
-            margin: 0,
             padding: "20px",
             display: "flex",
             flexDirection: "column",
-            alignItems: "center", // Center the content horizontally within available space
-            justifyContent: "flex-start",
+            alignItems: "center",
+            marginTop:"40px",
           }}
         >
           <Card
             style={{
-              width: "80%",
+              width: isSmallScreen ? "100%" : "80%",
               maxWidth: "1400px",
-              marginLeft: "170px",
+              marginLeft: isSmallScreen? "0" : "170px",
+              padding: "20px",
               boxSizing: "border-box",
             }}
           >
@@ -145,19 +175,26 @@ const PersonPage = () => {
                 marginBottom: "20px",
               }}
             >
-              <Title order={1} ml={10} style={{ marginBottom: "20px" }}>
+              <Title order={1} ml={10} mb={20}>
                 Persons
               </Title>
-              <Button variant="filled" color="blue" onClick={() => toggleModal()}>
+              <Button ml = {isSmallScreen? 190 : 0} mb={20} styles={{marginLeft: isSmallScreen? "100px" : "0"}} variant="filled" color="#6776ab" onClick={() => toggleModal()}>
                 Add Person
               </Button>
             </div>
 
             {/* Loading or Table */}
             {isLoading ? (
-              <p>Loading...</p>
+              <div style={{ textAlign: "center", marginTop: "20px" }}>
+                <Loader size="xl" />
+              </div>
             ) : (
-              <Table striped>
+              <Table striped
+                style={{
+                  width: "100%", // Ensure the table spans the full card width
+                  borderCollapse: "collapse", // Cleaner table layout
+                }}
+              >
                 <Table.Thead>
                   <Table.Tr>
                     <Table.Th>Name</Table.Th>
@@ -175,7 +212,7 @@ const PersonPage = () => {
                           variant="light"
                           color="blue"
                           onClick={() => toggleModal(person)}
-                          style={{ marginRight: "10px" }}
+                          style={{ marginRight: "10px"}}
                         >
                           Edit
                         </Button>

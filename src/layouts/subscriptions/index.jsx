@@ -3,6 +3,7 @@ import { Card, Button, Table, Modal, TextInput, Title, Group, Text, Loader } fro
 import AppSidebar from "../../components/appSidebar";
 import TopBar from "../../components/appTopBar";
 import { get_subscriptions, add_subscription, update_subscription, delete_subscription } from "../../api";
+import { useMediaQuery } from '@mantine/hooks';
 
 const SubscriptionsPage = () => {
   const [subscriptions, setSubscriptions] = useState([]);
@@ -17,11 +18,23 @@ const SubscriptionsPage = () => {
   });
   const [isEditMode, setIsEditMode] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
-  const [subscriptionToDelete, setSubscriptionToDelete] = useState(null); // To hold the subscription being deleted
+  const [subscriptionToDelete, setSubscriptionToDelete] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
   useEffect(() => {
     fetchSubscriptions();
   }, []);
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  useEffect(() => {
+    if (isSmallScreen) {
+      setIsSidebarOpen(false);
+    } else {
+      setIsSidebarOpen(true);
+    }
+  }, [isSmallScreen]);
 
   const fetchSubscriptions = async () => {
     setIsLoading(true);
@@ -98,15 +111,29 @@ const SubscriptionsPage = () => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100%" }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'auto' }}>
       {/* TopBar */}
-      <TopBar />
-
-      {/* Main Layout */}
-      <div style={{ display: "flex", flexGrow: 1, width: "100%" }}>
-        {/* Sidebar */}
-        <AppSidebar />
-
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 1000 }}>
+        <TopBar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      </div>
+        <div style={{ display: 'flex', flex: 1 }}>
+          {/* Sidebar */}
+          {isSidebarOpen && (
+            <div
+              style={{
+                width: '0',
+                backgroundColor: '#f4f4f4',
+                height: '100vh',
+                position: isSmallScreen ? 'fixed' : 'relative', // Fixed for small screens, relative for large screens
+                top: 0,
+                left: 0,
+                zIndex: isSmallScreen ? 999 : 'auto', // Higher z-index for small screens
+                transition: 'transform 0.3s ease', // Smooth open/close
+              }}
+            >
+              <AppSidebar />
+            </div>
+          )}
         {/* Main Content */}
         <div
           style={{
@@ -115,13 +142,14 @@ const SubscriptionsPage = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            marginTop:"40px",
           }}
         >
           <Card
             style={{
-              width: "80%",
+              width: isSmallScreen ? "100%" : "80%",
               maxWidth: "1400px",
-              marginLeft: "170px",
+              marginLeft: isSmallScreen? "0" : "170px",
               padding: "20px",
               boxSizing: "border-box",
             }}
@@ -134,10 +162,10 @@ const SubscriptionsPage = () => {
                 marginBottom: "20px",
               }}
             >
-              <Title order={1} ml={10} style={{ marginBottom: "20px" }}>
+              <Title order={1} ml={10} mb={20}>
                 Subscriptions
               </Title>
-              <Button variant="filled" color="blue" onClick={() => toggleModal()}>
+              <Button ml={10} mb={20} variant="filled" color="#6776ab" onClick={() => toggleModal()}>
                 Add Subscription
               </Button>
             </div>
@@ -148,7 +176,7 @@ const SubscriptionsPage = () => {
                 <Loader size="xl" />
               </div>
             ) : (
-              <Table striped>
+              <Table striped style={{ width: "100%" }}>
                 <Table.Thead>
                   <Table.Tr>
                     <Table.Th>Name</Table.Th>

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Container, Title, Card, Table } from "@mantine/core";
+import {Row, Col} from "reactstrap";
+import { Container, Title, Card, Table, Grid } from "@mantine/core";
 import 'react-calendar/dist/Calendar.css';
 import Calendar from 'react-calendar';
 import AppSidebar from "../../components/appSidebar";
 import TopBar from "../../components/appTopBar";
 import { tasks_view, getCookie, get_church_data } from "../../api";
 import InformationModal from "../../components/modals/InformationModal";
+import { useMediaQuery } from '@mantine/hooks';
 
 const TaskCalendar = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -16,6 +18,8 @@ const TaskCalendar = () => {
   const [taskId, setTaskId] = useState();
   const [isInformationModalOpen, setIsInformationModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
   const backgroundColor = selectedDate ? "#b0bce8" : "#b0bce8"; // Blue for non-selected days
   const priorityColors = {
@@ -23,6 +27,16 @@ const TaskCalendar = () => {
     medium: 'orange',
     low: 'green'
   };
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  useEffect(() => {
+    if (isSmallScreen) {
+      setIsSidebarOpen(false);
+    } else {
+      setIsSidebarOpen(true);
+    }
+  }, [isSmallScreen]);
 
   useEffect(() => {
     get_church_data()
@@ -118,11 +132,30 @@ const TaskCalendar = () => {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
-      <TopBar />
-      <div style={{ display: "flex" }}>
-        <AppSidebar />
-        <div style={{ position: "relative", left: "15%", width: "100%", height: "94vh" }} className="my-3">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: isSmallScreen ? 'auto' : 'hidden' }}>
+      {/* TopBar */}
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 1000 }}>
+        <TopBar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      </div>
+        <div style={{ display: 'flex', flex: 1 }}>
+          {/* Sidebar */}
+          {isSidebarOpen && (
+            <div
+              style={{
+                width: '0',
+                backgroundColor: '#f4f4f4',
+                height: '100vh',
+                position: isSmallScreen ? 'fixed' : 'relative', // Fixed for small screens, relative for large screens
+                top: 0,
+                left: 0,
+                zIndex: isSmallScreen ? 999 : 'auto', // Higher z-index for small screens
+                transition: 'transform 0.3s ease', // Smooth open/close
+              }}
+            >
+              <AppSidebar />
+            </div>
+          )}
+        <div style={{ position: "relative", left: isSmallScreen ? "5%" : "15%", width: isSmallScreen ? "auto" : "100%", height: isSmallScreen ? "auto" : "94vh", overflowY:isSmallScreen ? 'auto' : 'hidden' }} className="my-3">
         <InformationModal
           id={taskId}
           edit_task="null"
@@ -130,9 +163,10 @@ const TaskCalendar = () => {
           isOpen={isInformationModalOpen}
           toggle={toggleInformationModal}
         />
-          <Card className="my-card my-card-height schedule-card" style={{ width: "80%" }}>
-            <Title ta="center" mr={320} mb={30} order={1}>Task Calendar</Title>
-            <div className="calendar-wrapper">
+         
+          <Card className="my-card my-card-height schedule-card" style={{ width: isSmallScreen ?  "auto" : "80%"}}>
+          <Title ml={isSmallScreen? 40 : 60} mb={30} mt = {60} order={1}>Task Calendar</Title>
+            <div className={isSmallScreen ? "none" : "calendar-wrapper"}>
               <Calendar
                 value={selectedDate}
                 className="custom-calendar"
@@ -140,9 +174,9 @@ const TaskCalendar = () => {
                 tileContent={tileContent}
               />
               {selectedDate && (
-                <div>
-                  <hr style={{ border: 'none', borderTop: '1px solid #ccc', margin: '20px 0' }} />
-                  <div style={{ backgroundColor: "#b0bce8", padding: '20px', borderRadius: '8px' }}>
+                <div >
+                  <hr style={{ border: 'none', borderTop: '1px solid #ccc', margin: '20px 0', width: isSmallScreen ? "80%" : "100%" }} />
+                  <div style={{ backgroundColor: "#b0bce8", padding: '20px', borderRadius: '8px', width: isSmallScreen ? "80%" : "100%"}}>
                     <Title order={4} color="white">
                       Tasks for {selectedDate.toISOString().split('T')[0]}
                     </Title>
@@ -167,7 +201,7 @@ const TaskCalendar = () => {
                   </div>
                 </div>
               )}
-            </div>
+              </div>
           </Card>
         </div>
       </div>

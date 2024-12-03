@@ -8,10 +8,12 @@ import {
   Text,
 } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
+import { useMediaQuery } from '@mantine/hooks';
 
 function ForgotPassword() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const isSmallScreen = useMediaQuery('(max-width: 1068px)');
 
   const handleChange = (event) => {
     setEmail(event.target.value);
@@ -31,40 +33,42 @@ function ForgotPassword() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(135deg, #b8e6f5, #e3f4fa)",
+        background: "linear-gradient(135deg, #8490bd, #dae0f7)",
         position: "relative",
         overflow: "hidden",
       }}
     >
       {/* Background overlay circles */}
-      <div
-        style={{
-          position: "absolute",
-          top: "10%",
-          left: "10%",
-          width: 500,
-          height: 500,
-          background: "rgba(230, 251, 252)",
-          borderRadius: "50%",
-          zIndex: 1,
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          bottom: "10%",
-          right: "25%",
-          width: 300,
-          height: 300,
-          background: "rgba(230, 251, 252)",
-          borderRadius: "50%",
-          zIndex: 1,
-        }}
-      />
+      <>
+      {!isSmallScreen && (
+        <>
+      <div style={{
+        position: "absolute",
+        top: "10%",
+        left: "10%",
+        width: 500,
+        height: 500,
+        background: "#dadeed",
+        borderRadius: "50%",
+        zIndex: 1
+      }} />
+      <div style={{
+        position: "absolute",
+        bottom: "10%",
+        right: "20%",
+        width: 300,
+        height: 300,
+        background: "#dadeed",
+        borderRadius: "50%",
+        zIndex: 1
+      }} />
+      </>
+      )}
+      </>
       <Box
         style={{
-          width: 500,
-          height: 600,
+          width: isSmallScreen ? 400 : 500,
+          height: isSmallScreen ? 500 : 600,
           padding: 40,
           background: "white",
           boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",

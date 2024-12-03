@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Button, TextInput, PasswordInput, Container, Title, Text, Box } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 import { login, getCookie, updateCookie as setcookie } from "../../../api";
+import { useMediaQuery } from '@mantine/hooks';
 
 function Login() {
+  const isSmallScreen = useMediaQuery('(max-width: 1068px)');
   
   useEffect(() => {
     if (getCookie("user") == null && getCookie("priv") == null) {
@@ -108,6 +110,9 @@ function Login() {
       }}
     >
       {/* Background overlay circles */}
+      <>
+      {!isSmallScreen && (
+        <>
       <div style={{
         position: "absolute",
         top: "10%",
@@ -128,10 +133,13 @@ function Login() {
         borderRadius: "50%",
         zIndex: 1
       }} />
+      </>
+      )}
+      </>
       <Box
         style={{
-            width: 600,
-            height: 850,
+            width: isSmallScreen ? 500 : 600,
+            height: isSmallScreen ? 600 : 850,
             padding: 40,
             background: "white",
             boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",

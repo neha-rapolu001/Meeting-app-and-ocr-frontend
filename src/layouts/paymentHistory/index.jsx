@@ -3,10 +3,23 @@ import { Card, Title, Table, Loader, Text } from "@mantine/core";
 import { get_all_payments } from "../../api";
 import AppSidebar from "../../components/appSidebar";
 import TopBar from "../../components/appTopBar";
+import { useMediaQuery } from '@mantine/hooks';
 
 const PaymentHistory = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [payments, setPayments] = useState([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const isSmallScreen = useMediaQuery('(max-width: 768px)');
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  useEffect(() => {
+    if (isSmallScreen) {
+      setIsSidebarOpen(false);
+    } else {
+      setIsSidebarOpen(true);
+    }
+  }, [isSmallScreen]);
 
   useEffect(() => {
     get_all_payments()
@@ -30,15 +43,29 @@ const PaymentHistory = () => {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100%" }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'auto' }}>
       {/* TopBar */}
-      <TopBar />
-
-      {/* Main Layout */}
-      <div style={{ display: "flex", flexGrow: 1, width: "100%" }}>
-        {/* Sidebar */}
-        <AppSidebar />
-
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 1000 }}>
+        <TopBar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      </div>
+        <div style={{ display: 'flex', flex: 1 }}>
+          {/* Sidebar */}
+          {isSidebarOpen && (
+            <div
+              style={{
+                width: '0',
+                backgroundColor: '#f4f4f4',
+                height: '100vh',
+                position: isSmallScreen ? 'fixed' : 'relative', // Fixed for small screens, relative for large screens
+                top: 0,
+                left: 0,
+                zIndex: isSmallScreen ? 999 : 'auto', // Higher z-index for small screens
+                transition: 'transform 0.3s ease', // Smooth open/close
+              }}
+            >
+              <AppSidebar />
+            </div>
+          )}
         {/* Main Content */}
         <div
           style={{
@@ -47,13 +74,14 @@ const PaymentHistory = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            marginTop:"40px",
           }}
         >
           <Card
             style={{
-              width: "80%",
+              width: isSmallScreen ? "100%" : "80%",
               maxWidth: "1400px",
-              marginLeft: "170px",
+              marginLeft: isSmallScreen? "0" : "170px",
               padding: "20px",
               boxSizing: "border-box",
             }}
@@ -72,7 +100,12 @@ const PaymentHistory = () => {
                 <Text>No payments found.</Text>
               </div>
             ) : (
-              <Table striped >
+              <Table striped 
+                style={{
+                  width: "100%", // Ensure the table spans the full card width
+                  borderCollapse: "collapse", // Cleaner table layout
+                }}
+              >
                 <Table.Thead>
                   <Table.Tr>
                     <Table.Th style={{ padding: "10px 15px" }}>Transaction ID</Table.Th>

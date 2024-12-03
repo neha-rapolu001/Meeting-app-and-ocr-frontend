@@ -12,11 +12,13 @@ import {
   Paper,
   Table,
   Card,
-  Loader
+  Loader, 
+  ScrollArea
 } from "@mantine/core";
 import { get_users, delete_user, signup, update_user, get_church_data, getCookie, isSuperUser } from "../../api";
 import AppSidebar from "../../components/appSidebar";
 import TopBar from "../../components/appTopBar";
+import { useMediaQuery } from '@mantine/hooks';
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -48,6 +50,8 @@ const Users = () => {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [userToDelete, setUserToDelete] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); 
+  const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
   useEffect(() => {
     fetchData();
@@ -62,6 +66,16 @@ const Users = () => {
     2: "Admin",
     3: "Leader",
   };
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+  useEffect(() => {
+    if (isSmallScreen) {
+      setIsSidebarOpen(false); // Close sidebar on small screens
+    } else {
+      setIsSidebarOpen(true); // Open sidebar on large screens
+    }
+  }, [isSmallScreen]);
 
   const fetchData = async () => {
     setIsLoading(true); // Show loading state
@@ -210,10 +224,29 @@ const Users = () => {
   ));
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100%" }}>
-      <TopBar />
-      <div style={{ display: "flex", flexGrow: 1, width: "100%" }}>
-        <AppSidebar />
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'auto' }}>
+      {/* TopBar */}
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 1000 }}>
+        <TopBar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      </div>
+        <div style={{ display: 'flex', flex: 1 }}>
+          {/* Sidebar */}
+          {isSidebarOpen && (
+            <div
+              style={{
+                width: '0',
+                backgroundColor: '#f4f4f4',
+                height: '100vh',
+                position: isSmallScreen ? 'fixed' : 'relative', // Fixed for small screens, relative for large screens
+                top: 0,
+                left: 0,
+                zIndex: isSmallScreen ? 999 : 'auto', // Higher z-index for small screens
+                transition: 'transform 0.3s ease', // Smooth open/close
+              }}
+            >
+              <AppSidebar />
+            </div>
+          )}
         {/* Main Content */}
         <div
           style={{
@@ -222,17 +255,20 @@ const Users = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            marginTop:"40px",
           }}
         >
           <Card
             style={{
-              width: "80%",
+              width: isSmallScreen ? "100%" : "80%",
+              minWidth: "800px",
               maxWidth: "1400px",
-              marginLeft: "170px",
+              marginLeft: isSmallScreen? "0" : "170px",
               padding: "20px",
               boxSizing: "border-box",
             }}
           >
+            
            <div
               style={{
                 display: "flex",
@@ -245,7 +281,7 @@ const Users = () => {
                 Existing Users
               </Title>
               {!isSuperUser() && (
-                <Button variant="filled" color="#65729e" onClick={toggleAddModal}>
+                <Button ml={10} mb={20} variant="filled" color="#65729e" onClick={toggleAddModal}>
                   Add New User
                 </Button>
               )}
@@ -258,7 +294,6 @@ const Users = () => {
               <Table striped
                 style={{
                   width: "100%", // Ensure the table spans the full card width
-                  tableLayout: "fixed", // Prevent the columns from expanding disproportionately
                   borderCollapse: "collapse", // Cleaner table layout
                 }}
               >
@@ -403,7 +438,7 @@ const Users = () => {
           </Modal>
         </div>
       </div>
-    </div>
+</div>
   );
 };
 
