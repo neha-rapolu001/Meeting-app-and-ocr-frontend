@@ -182,10 +182,10 @@ const Schedule = () => {
                 width: '150px',
                 backgroundColor: '#f4f4f4',
                 height: '100vh',
-                position: 'fixed',
+                position: isSmallScreen ? 'fixed' : 'relative',
                 top: 0,
                 left: 0,
-                zIndex: isSmallScreen ? 999 : 'auto', // Higher z-index for small screens
+                zIndex: isSmallScreen ? 999 : 999, // Higher z-index for small screens
                 transition: 'transform 0.3s ease', // Smooth open/close
               }}
             >
