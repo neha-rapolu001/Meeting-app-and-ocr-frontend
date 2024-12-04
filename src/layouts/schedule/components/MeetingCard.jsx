@@ -62,6 +62,7 @@ const MeetingCard = (props) => {
       attendees: props.meeting.attendees,
       agenda: props.meeting.agenda,
       notes: props.meeting.notes,
+      notes_image: props.meeting.notes_image,
       questions: props.meeting.questions,
       action_steps: props.meeting.action_steps,
       objective: props.meeting.objective,
@@ -152,160 +153,181 @@ const MeetingCard = (props) => {
 
   return (
     <Card
-  className="outer-card card-margin"
-  style={{
-    backgroundColor: "#6776ab",
-    borderRadius: "6px",
-    width: "450px",
-    padding: "20px",
-    height: "200px",
-    cursor: "pointer",
-    position: "relative",
-    overflow: "hidden", // Ensures no content spills out
-    transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
-  }}
-  onMouseEnter={(e) => {
-    e.currentTarget.style.transform = "scale(1.05)";
-    e.currentTarget.style.boxShadow = "0 10px 15px rgba(0, 0, 0, 0.1)";
-  }}
-  onMouseLeave={(e) => {
-    e.currentTarget.style.transform = "scale(1)";
-    e.currentTarget.style.boxShadow = "none";
-  }}
->
-  <DeleteMeetingModal
-    meeting={props.meeting}
-    isOpen={isDeleteMeetingModalOpen}
-    toggle={toggleDeleteMeetingModal}
-  />
-
-  <MeetingInformationModal
-    isOpen={isMeetingInfoModalOpen}
-    toggle={toggleMeetingInfoModal}
-    meeting={selectedMeeting}
-  />
-
-  <Card.Section
-    onClick={handleEventClick}
-    style={{
-      padding: "10px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      position: "relative",
-    }}
-  >
-    <Flex align="center" direction="row" gap="sm">
-      <IconCalendar size={32} style={{ color: "#e6e6e8" }} />
-      <Flex align="center" direction="column" style={{ gap: "3px" }}>
-        <Text style={{ fontSize: "12px", color: "#e6e6e8" }}>{formatDate()}</Text>
-        <Text style={{ fontSize: "12px", color: "#e6e6e8" }}>{formatTime()}</Text>
-      </Flex>
-    </Flex>
-
-    <Title
-      order={3}
+      className="outer-card card-margin"
       style={{
-        color: "#e6e6e8",
-        textAlign: "center",
-        flex: 1,
-        whiteSpace: "nowrap", // Avoid text overflow
-        overflow: "hidden",
-        textOverflow: "ellipsis",
+        backgroundColor: "#6776ab",
+        borderRadius: "6px",
+        width: "450px",
+        padding: "20px",
+        height: "200px",
+        cursor: "pointer",
+        position: "relative",
+        overflow: "hidden", // Ensures no content spills out
+        transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "scale(1.05)";
+        e.currentTarget.style.boxShadow = "0 10px 15px rgba(0, 0, 0, 0.1)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "scale(1)";
+        e.currentTarget.style.boxShadow = "none";
       }}
     >
-      {props.meeting.name}
-    </Title>
+      <DeleteMeetingModal
+        meeting={props.meeting}
+        isOpen={isDeleteMeetingModalOpen}
+        toggle={toggleDeleteMeetingModal}
+      />
 
-    <Group spacing={0} style={{ gap: "0px" }}>
-      {isSuperUser() && (
-        <IconButton
-          onClick={() =>
-            navigate("/schedule/meeting", {
-              state: { meeting: props.meeting, clearForm: false },
-            })
-          }
-          style={{ color: "#e6e6e8" }}
-        >
-          <RemoveRedEyeIcon />
-        </IconButton>
-      )}
-      {!isSuperUser() && (
-        <>
-          <IconButton
-            label="Edit"
-            onClick={() =>
-              navigate("/schedule/meeting", {
-                state: { meeting: props.meeting, clearForm: false },
-              })
-            }
-            style={{ color: "#e6e6e8" }}
-          >
-            <EditIcon />
-          </IconButton>
-          <IconButton onClick={handleDuplicateMeeting} style={{ color: "#e6e6e8" }}>
-            <CopyIcon />
-          </IconButton>
-          <IconButton onClick={deleteMeeting} style={{ color: "#e6e6e8" }}>
-            <DeleteIcon />
-          </IconButton>
-        </>
-      )}
-    </Group>
-  </Card.Section>
+      <MeetingInformationModal
+        isOpen={isMeetingInfoModalOpen}
+        toggle={toggleMeetingInfoModal}
+        meeting={selectedMeeting}
+      />
 
-  {/* Bottom Section */}
-  <Card.Section
-    onClick={handleEventClick}
-    style={{
-      position: "absolute",
-      bottom: 0, // Leave a small margin at the bottom
-      left: 16,
-      right: 16,
-      padding: "10px",
-      backgroundColor: "#f2f4fa",
-      display: "flex",
-      justifyContent: "space-between",
-      //alignItems: "center",
-      borderTop: "1px solid #ccc",
-      height: "130px", // Adjust to fit the content better
-    }}
-  >
-    {/* Left Column: Type and Agenda */}
-    <div style={{ flex: 1 }}>
-      <Text
+      <Card.Section
+        onClick={handleEventClick}
         style={{
-          fontSize: "14px",
-          fontWeight: "bold",
-          color: "#2E2E2E",
-          marginBottom: "15px",
+          padding: "10px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          position: "relative",
         }}
       >
-        Type: {props.meeting.type || "Not specified"}
-      </Text>
-      <Text style={{ fontSize: "12px", color: "#2E2E2E" }}>
-        Agenda: {props.meeting.agenda || "No agenda provided."}
-      </Text>
-    </div>
+        <Flex align="center" direction="row" gap="sm">
+          <IconCalendar size={32} style={{ color: "#e6e6e8" }} />
+          <Flex align="center" direction="column" style={{ gap: "3px" }}>
+            <Text style={{ fontSize: "12px", color: "#e6e6e8" }}>{formatDate()}</Text>
+            <Text style={{ fontSize: "12px", color: "#e6e6e8" }}>{formatTime()}</Text>
+          </Flex>
+        </Flex>
 
-    {/* Right Column: People Invited */}
-    <div style={{ flex: 1, textAlign: "right" }}>
-      {displayedPeople.map((person, index) => (
-        <Text
-          key={index}
-          style={{ fontSize: "12px", color: "#2E2E2E", marginBottom: "4px" }}
+        <Title
+          order={3}
+          style={{
+            color: "#e6e6e8",
+            textAlign: "center",
+            flex: 1,
+            whiteSpace: "nowrap", // Avoid text overflow
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
         >
-          {person}
+          {props.meeting.name}
+        </Title>
+
+        <Group spacing={0} style={{ gap: "0px" }}>
+          {isSuperUser() && (
+            <IconButton
+              onClick={() =>
+                navigate("/schedule/meeting", {
+                  state: { meeting: props.meeting, clearForm: false },
+                })
+              }
+              style={{ color: "#e6e6e8" }}
+            >
+              <RemoveRedEyeIcon />
+            </IconButton>
+          )}
+          {!isSuperUser() && (
+            <>
+              <IconButton
+                label="Edit"
+                onClick={() =>
+                  navigate("/schedule/meeting", {
+                    state: { meeting: props.meeting, clearForm: false },
+                  })
+                }
+                style={{ color: "#e6e6e8" }}
+              >
+                <EditIcon />
+              </IconButton>
+              <IconButton onClick={handleDuplicateMeeting} style={{ color: "#e6e6e8" }}>
+                <CopyIcon />
+              </IconButton>
+              <IconButton onClick={deleteMeeting} style={{ color: "#e6e6e8" }}>
+                <DeleteIcon />
+              </IconButton>
+            </>
+          )}
+        </Group>
+      </Card.Section>
+
+      {/* Bottom Section */}
+      <Card.Section
+        onClick={handleEventClick}
+        style={{
+          position: "absolute",
+          bottom: 0, // Leave a small margin at the bottom
+          left: 16,
+          right: 16,
+          padding: "10px",
+          backgroundColor: "#f2f4fa",
+          display: "flex",
+          justifyContent: "space-between",
+          //alignItems: "center",
+          borderTop: "1px solid #ccc",
+          height: "130px", // Adjust to fit the content better
+        }}
+      >
+        {/* Left Column: Type and Agenda */}
+        <div style={{ flex: 1 }}>
+          <Text
+            style={{
+              fontSize: "14px",
+              fontWeight: "bold",
+              color: "#2E2E2E",
+              marginBottom: "15px",
+            }}
+          >
+            Type: {props.meeting.type || "Not specified"}
+          </Text>
+          <Text style={{ fontSize: "12px", color: "#2E2E2E" }}>
+            Agenda: {props.meeting.agenda || "No agenda provided."}
+          </Text>
+        </div>
+
+        {/* Right Column: People Invited */}
+        <div style={{ flex: 1, textAlign: "right" }}>
+          {displayedPeople.map((person, index) => (
+            <Text
+              key={index}
+              style={{ fontSize: "12px", color: "#2E2E2E", marginBottom: "4px" }}
+            >
+              {person}
+            </Text>
+          ))}
+          {remainingPeople && (
+            <Text style={{ fontSize: "12px", color: "#2E2E2E" }}>{remainingPeople}</Text>
+          )}
+        </div>
+        <Modal
+          opened={isDuplicateModalOpen}
+          onClose={toggleDuplicateModal}
+          title="Confirm Duplicate"
+          overlayProps={{
+            backgroundOpacity: 0.55,
+            blur: 3,
+          }}
+          size="sm"
+          padding="lg"
+        >
+        <Text size="md" weight={500} style={{ marginBottom: '1rem' }}>
+          Are you sure you want to duplicate this meeting?
         </Text>
-      ))}
-      {remainingPeople && (
-        <Text style={{ fontSize: "12px", color: "#2E2E2E" }}>{remainingPeople}</Text>
-      )}
-    </div>
-  </Card.Section>
-</Card>
-
-
+        <Group position="apart">
+          <Button color="red" onClick={duplicateMeeting}>
+            Yes
+          </Button>
+          <Button color="gray" onClick={toggleDuplicateModal}>
+            No
+          </Button>
+        </Group>
+        </Modal>
+      </Card.Section>
+    </Card>
   );
 };
 
