@@ -46,7 +46,11 @@ const AddPersonModal = ({ opened, toggleModal, fetchPersons }) => {
   };
 
   return (
-    <Modal opened={opened} onClose={toggleModal} title="Add New Person">
+    <Modal 
+      opened={opened} 
+      onClose={toggleModal} 
+      title={<strong style={{fontSize:"20px"}}>Add New Person</strong>}
+    >
       <div>
         <div style={{ marginBottom: "15px" }}>
           <TextInput

@@ -19,13 +19,17 @@ export const signup_approve = (formData) => api.post('signup-approve/', formData
 export const login = (formData) => api.post('login/', formData);
 export const tasks_create = (formData) => api.post('tasks/', formData);
 export const tasks_view = () => api.get('tasks/');
-export const meeting_create = (formData) => api.post('meeting/', formData);
+export const meeting_create = (formData) => api.post('meeting/', formData, {
+    headers: {
+        'Content-Type': 'multipart/form-data',
+      }
+});
 export const meeting_ocr = (image) => api.post('meeting/ocr', image);
 export const meeting_view = () => api.get('meeting/');
 export const meeting_read = (pk) => api.get(`meeting/${pk}`);
 export const meeting_update = (pk, formData) => api.put(`meeting/${pk}`, formData, {
     headers: {
-      'Content-Type': 'multipart/form-data', // Make sure this header is set
+      'Content-Type': 'multipart/form-data',
     }
 });
 export const person_view = (id) => api.get(`get_person/${id}`);

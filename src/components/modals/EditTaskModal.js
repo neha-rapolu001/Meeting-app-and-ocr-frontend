@@ -130,7 +130,7 @@ const EditTaskModal = ({ isOpen, toggle, id }) => {
         backgroundOpacity: 0.55,
         blur: 3,
       }}
-      title="Edit Task"
+      title={<strong style={{fontSize:"20px"}}>Edit Task</strong>}
       size="lg" // Make the modal larger
       padding="lg" // Add extra padding inside the modal
     >

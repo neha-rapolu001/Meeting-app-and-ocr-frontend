@@ -120,7 +120,7 @@ const CreateTaskModal = ({ isOpen, toggle }) => {
         backgroundOpacity: 0.55,
         blur: 3,
       }}
-      title="Create Task"
+      title={<strong style={{fontSize:"20px"}}>Create Task</strong>}
       size="lg" // Make the modal larger
       padding="lg" // Add extra padding inside the modal
     >

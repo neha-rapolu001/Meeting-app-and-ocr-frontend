@@ -174,7 +174,7 @@ const ChurchList = () => {
                 marginBottom: "20px",
               }}
             >
-              <Title order={1} ml = {10} style={{ marginBottom: "20px" }}>
+              <Title order={isSmallScreen ? 2 : 1} ml = {10} style={{ marginBottom: "20px" }}>
               Church List
             </Title>
             </div>
@@ -201,14 +201,10 @@ const ChurchList = () => {
           <Modal
             opened={isEditModalOpen}
             onClose={toggleEditModal}
-            title="Edit Church"
+            title={<strong style={{ fontSize: "20px"}}>Edit Church</strong>}
             overlayProps={{
               backgroundOpacity: 0.55,
               blur: 3,
-            }}
-            styles={{
-              modal: { color: "black" },
-              title: { fontSize: "20px", fontWeight: 500 },
             }}
           >
               {/* Church Name Field */}

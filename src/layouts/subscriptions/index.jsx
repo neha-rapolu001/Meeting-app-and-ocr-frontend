@@ -163,7 +163,7 @@ const SubscriptionsPage = () => {
                 marginBottom: "20px",
               }}
             >
-              <Title order={1} ml={10} mb={20}>
+              <Title order={isSmallScreen ? 2 : 1} ml={10} mb={20}>
                 Subscriptions
               </Title>
               <Button mb={20} variant="filled" color="#6776ab" onClick={() => toggleModal()}>
@@ -215,7 +215,15 @@ const SubscriptionsPage = () => {
       </div>
 
       {/* Modal for Add/Edit */}
-      <Modal opened={modalOpen} onClose={() => toggleModal()} title={isEditMode ? "Edit Subscription" : "Add Subscription"}>
+      <Modal 
+        opened={modalOpen} 
+        onClose={() => toggleModal()} 
+        title={isEditMode ? <strong style={{ fontSize:"20px"}}>Edit Subscription</strong> : <strong style={{ fontSize:"20px"}}>Add Subscription</strong>}
+        overlayProps={{
+          backgroundOpacity: 0.55,
+          blur: 3,
+        }}
+        >
         <div>
           <div style={{ marginBottom: "15px" }}>
             <TextInput

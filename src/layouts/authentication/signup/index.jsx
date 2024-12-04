@@ -61,19 +61,19 @@ const Signup = () => {
     });
 
     const handleChange = event => {
-      const { name, value } = event.target;
-      if (name === 'ph_no') {
-        const cleanedValue = value.replace(/[\s-]/g, '');
-        setFormData(prevState => ({
-            ...prevState,
-            [name]: cleanedValue,
-        }));
+        const { name, value } = event.target;
+        if (name === 'ph_no') {
+          const cleanedValue = value.replace(/[\s-]/g, '');
+          setFormData(prevState => ({
+              ...prevState,
+              [name]: cleanedValue,
+          }));
       } else {
-        setFormData(prevState => ({
-            ...prevState,
-            [name]: value,
-        }));
-    }
+          setFormData(prevState => ({
+              ...prevState,
+              [name]: value,
+          }));
+      }
     };
 
     useEffect(() => {

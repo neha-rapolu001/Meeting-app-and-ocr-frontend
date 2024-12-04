@@ -176,7 +176,7 @@ const PersonPage = () => {
                 marginBottom: "20px",
               }}
             >
-              <Title order={1} ml={10} mb={20}>
+              <Title order={isSmallScreen ? 2 : 1} ml={10} mb={20}>
                 Persons
               </Title>
               <Button ml = {isSmallScreen? 190 : 0} mb={20} styles={{marginLeft: isSmallScreen? "100px" : "0"}} variant="filled" color="#6776ab" onClick={() => toggleModal()}>
@@ -231,30 +231,28 @@ const PersonPage = () => {
       </div>
 
       {/* Modal */}
-      <Modal opened={modalOpen} onClose={() => toggleModal()} title="Add or Edit Person">
-        <div>
-          <div style={{ marginBottom: "15px" }}>
+      <Modal opened={modalOpen} onClose={() => toggleModal()} title={<strong style={{fontSize:"20px"}}>Add or Edit Person</strong>}>
             <TextInput
               label="Name"
               placeholder="Person Name"
               name="name"
               value={formData.name}
               onChange={handleInputChange}
+              mb="1rem"
               error={validationErrors.name}
               required
             />
-          </div>
-          <div>
+
             <TextInput
               label="Email"
               placeholder="Person Email"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
+              mb="1rem"
               error={validationErrors.email}
               required
             />
-          </div>
           <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px" }}>
             <Button variant="filled" color="blue" onClick={handleSubmit} style={{ marginRight: "10px" }}>
               Save
@@ -263,7 +261,6 @@ const PersonPage = () => {
               Cancel
             </Button>
           </div>
-        </div>
       </Modal>
         <Modal
           opened={deleteModalOpen}

@@ -289,7 +289,7 @@ const SubMenuItem = ({ icon, text, submenu }) => {
             if (!submenuHovered) {
                 setIsHovered(false);
             }
-        }, 1); // Short delay to allow submenu hover
+        }, );
     };
 
     return (

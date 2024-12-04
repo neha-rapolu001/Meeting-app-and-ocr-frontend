@@ -86,7 +86,7 @@ const PaymentHistory = () => {
               boxSizing: "border-box",
             }}
           >
-            <Title order={1} ml={10} style={{ marginBottom: "20px" }}>
+            <Title order={isSmallScreen ? 2 : 1} ml={10} style={{ marginBottom: "20px" }}>
               Payment History
             </Title>
 

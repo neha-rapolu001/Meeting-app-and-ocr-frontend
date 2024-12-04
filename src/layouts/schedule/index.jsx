@@ -276,7 +276,7 @@ const Schedule = () => {
               ) : (
                 <Row>
                   {meetings.map((meeting) => (
-                    <Col key={meeting.id} span={{xs:'12', md:'4', lg:'4'}} 
+                    <Col key={meeting.id} span={{xs:'12', sm:'8', md:'4', lg:'4'}} 
                       style={{
                         display: "flex",
                         justifyContent: "center",

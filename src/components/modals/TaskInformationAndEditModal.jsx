@@ -9,7 +9,7 @@ import {
   Group,
   MultiSelect
 } from "@mantine/core";
-import { tasks_update, task_view, getCookie, person_view } from "../../api";
+import { tasks_update, task_view, getCookie, person_view, isSuperUser, isLeader, meeting_view, get_users, get_church_data} from "../../api";
 import AddPersonModal from "./AddPersonModal";
 
 const TaskInformationAndEditModal = ({ isOpen, toggle, id, task }) => {
@@ -32,6 +32,9 @@ const TaskInformationAndEditModal = ({ isOpen, toggle, id, task }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [people, setPeople] = useState([]); // List of persons for MultiSelect
   const [addPersonModalOpen, setAddPersonModalOpen] = useState(false);
+  const [meetingName, setMeetingName] = useState(null);
+  const [userName, setUserName] = useState("");
+  const [churchName, setChurchName] = useState(null);
 
   useEffect(() => {
     if (!isOpen) {
@@ -39,6 +42,47 @@ const TaskInformationAndEditModal = ({ isOpen, toggle, id, task }) => {
       fetchPeople();
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    const fetchMeetingName = async () => {
+      if (task?.meeting_id) {
+        try {
+          const response = await meeting_view(); // Fetch all meetings
+          const meeting = response?.data?.find((m) => m.id === task.meeting_id);
+          setMeetingName(meeting ? meeting.name : "Unknown Meeting");
+        } catch (error) {
+          console.error("Error fetching meeting name:", error);
+          setMeetingName("Unknown Meeting");
+        }
+      }
+    };
+
+    const fetchUserName = async () => {
+      try {
+        const response = await get_users(getCookie("church"));
+        const user = response?.data?.find((u) => u.id === task.created_by);
+        setUserName(user ? user.first_name + " " + user.last_name: "Unknown User");
+      } catch (error) {
+        console.error("Error fetching user name:", error);
+        setUserName("Unknown User");
+      }
+    };
+
+    const fetchChurchName = async () => {
+      try {
+        const response = await get_church_data();
+        const church = response?.data?.find((c) => c.id === task.church);
+        setChurchName(church ? church.name : "Unknown Church");
+      } catch (error) {
+        console.error("Error fetching church name: ", error);
+        setChurchName("Unknown Church");
+      }
+    }
+
+    fetchMeetingName();
+    fetchUserName();
+    fetchChurchName();
+  }, [task?.meeting_id], [task?.created_by], [task?.church]);
 
   const fetchPeople = async () => {
     const church = parseInt(getCookie("church"));
@@ -72,6 +116,7 @@ const TaskInformationAndEditModal = ({ isOpen, toggle, id, task }) => {
         priority: task.priority,
         is_completed: task.is_completed,
         task_id: task.id,
+        meeting_id: task.meeting_id,
         created_by: task.created_by,
         church: task.church,
         is_delete: task.deleted,
@@ -143,7 +188,7 @@ const TaskInformationAndEditModal = ({ isOpen, toggle, id, task }) => {
     <Modal 
       opened={isOpen} 
       onClose={toggle} 
-      title={formData.task_name || "Task Details"} 
+      title={<strong style={{fontSize:"22px"}}> {formData.task_name || "Task Details"} </strong>}
       size="lg"
       overlayProps={{
         backgroundOpacity: 0.55,
@@ -269,9 +314,27 @@ const TaskInformationAndEditModal = ({ isOpen, toggle, id, task }) => {
           <Text size="md" style={{ marginBottom: '1rem' }}>
             <strong>End Date:</strong> {formData.end_date}
           </Text>
+          <Text size="md" weight={500} style={{ marginBottom: '1rem' }}>
+            <strong>Priority:</strong> {formData.priority}
+          </Text>
           <Text size="md" style={{ marginBottom: '1rem' }}>
             <strong>Status:</strong> {formData.is_completed ? "Completed" : "Pending"}
           </Text>
+          {formData?.meeting_id &&(
+            <Text size="md" weight={500} style={{ marginBottom: '1rem' }}>
+              <strong>Meeting:</strong> {meetingName}
+            </Text>
+          )}
+          {!isLeader() && (
+            <Text size="md" weight={500} style={{ marginBottom: '1rem' }}>
+              <strong>Created by:</strong> {userName}
+            </Text>
+          )}
+          {isSuperUser() && (
+            <Text size="md" weight={500} style={{ marginBottom: '1rem' }}>
+              <strong>Church:</strong> {churchName}
+            </Text>
+          )}
           <Group position="apart" mt="md">
             <Button onClick={() => setIsEditMode(true)}>Edit</Button>
             <Button color="gray" onClick={toggle}>

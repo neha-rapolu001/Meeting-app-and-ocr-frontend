@@ -146,7 +146,10 @@ const Users = () => {
 
   const handleEdit = (index) => {
     setEditedIndex(index);
-    setEditedUser(users[index]);
+    setEditedUser({
+      ...users[index],
+      user_type: String(users[index].user_type), // Ensure user_type is a string
+    });
     toggleEditModal();
   };
 
@@ -277,7 +280,7 @@ const Users = () => {
                 marginBottom: "20px",
               }}
             >
-              <Title order={1} ml={10} mb={20}>
+              <Title order={isSmallScreen ? 2 : 1} ml={10} mb={20}>
                 Existing Users
               </Title>
               {!isSuperUser() && (
@@ -321,13 +324,21 @@ const Users = () => {
             </Group>
           </Modal>
 
-          <Modal opened={addModal} onClose={toggleAddModal}>
-            <Title order={2}>Add New User</Title>
+          <Modal 
+            title = {<strong style={{fontSize: "20px"}}>Add New User</strong>} 
+            opened={addModal} 
+            onClose={toggleAddModal} 
+            overlayProps={{
+              backgroundOpacity: 0.55,
+              blur: 3,
+            }}
+          >
             <TextInput
               label="First Name"
               value={newUser.first_name}
               onChange={handleAddInputChange}
               name="first_name"
+              mb='1rem'
               error={firstNameError}
             />
             <TextInput
@@ -335,6 +346,7 @@ const Users = () => {
               value={newUser.last_name}
               onChange={handleAddInputChange}
               name="last_name"
+              mb='1rem'
               error={lastNameError}
             />
             <TextInput
@@ -342,11 +354,13 @@ const Users = () => {
               value={newUser.email}
               onChange={handleAddInputChange}
               name="email"
+              mb='1rem'
               error={emailError}
             />
             <Select
               label="Privilege"
               value={newUser.user_type}
+              mb='1rem'
               onChange={(value) => handleAddInputChange({ target: { name: "user_type", value } })}
               data={[
                 ...(isSuperUser() ? [{ value: "1", label: "Super-user" }] : []),
@@ -360,24 +374,34 @@ const Users = () => {
               value={newUser.password}
               onChange={handleAddInputChange}
               name="password"
+              mb='1rem'
               error={passwordError}
             />
             <Group position="right">
-              <Button variant="filled" color="yellow" onClick={handleAddUser}>
+              <Button variant="filled" onClick={handleAddUser}>
                 Add User
               </Button>
-              <Button variant="outline" onClick={toggleAddModal}>
+              <Button variant="outline" color="gray" onClick={toggleAddModal}>
                 Cancel
               </Button>
             </Group>
           </Modal>
 
-          <Modal title="Edit User" opened={editModal} onClose={toggleEditModal}>
+          <Modal 
+          title={<strong style={{ fontSize:"20px" }}> Edit User</strong>} 
+          opened={editModal} 
+          onClose={toggleEditModal}
+          overlayProps={{
+            backgroundOpacity: 0.55,
+            blur: 3,
+          }}
+          >
             <TextInput
               label="First Name"
               value={editedUser.first_name}
               onChange={handleInputChange}
               name="first_name"
+              mb="1rem"
               error={firstNameError}
             />
             <TextInput
@@ -385,6 +409,7 @@ const Users = () => {
               value={editedUser.last_name}
               onChange={handleInputChange}
               name="last_name"
+              mb="1rem"
               error={lastNameError}
             />
             <TextInput
@@ -392,11 +417,13 @@ const Users = () => {
               value={editedUser.email}
               onChange={handleInputChange}
               name="email"
+              mb="1rem"
               error={emailError}
             />
             <Select
               label="Privilege"
               value={editedUser.user_type}
+              mb="1rem"
               onChange={(value) => handleInputChange({ target: { name: "user_type", value } })}
               data={[
                 ...(isSuperUser() ? [{ value: "1", label: "Super-user" }] : []),
@@ -405,10 +432,10 @@ const Users = () => {
               ]}
             />
             <Group position="right">
-              <Button variant="filled" color="yellow" onClick={handleSaveEdit}>
+              <Button variant="filled" onClick={handleSaveEdit}>
                 Save Changes
               </Button>
-              <Button variant="outline" onClick={toggleEditModal}>
+              <Button variant="outline" color="grey" onClick={toggleEditModal}>
                 Cancel
               </Button>
             </Group>
@@ -438,7 +465,7 @@ const Users = () => {
           </Modal>
         </div>
       </div>
-</div>
+    </div>
   );
 };
 

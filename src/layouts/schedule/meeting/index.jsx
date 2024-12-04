@@ -14,10 +14,9 @@ import {
   Form,
   FormGroup,
   Label,
-  Modal
 } from 'reactstrap';
 import { useMediaQuery } from "@mantine/hooks";
-import {  Radio,Container,Title,Button, Card,  NavLink, Text,TextInput, Textarea, MultiSelect, Group, Select } from "@mantine/core";
+import {  Radio,Container,Title,Button, Card,  NavLink, Text,TextInput, Textarea, MultiSelect, Group, Select, Modal } from "@mantine/core";
 import { useNavigate, useLocation } from "react-router-dom";
 import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -49,13 +48,18 @@ const Meeting = (props) => {
 
   //To handle the modal popup//
   const [modalOpen, setModalOpen] = useState(false);
-  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
+  const [uploadedImageUrl, setUploadedImageUrl] = useState('');
 
   // Function to handle opening the modal and setting the uploaded image URL
   const handleImageClick = (imageUrl) => {
     setUploadedImageUrl(imageUrl);
+    console.log("Uploaded Image Url:", uploadedImageUrl);
     setModalOpen(true);
   };
+
+  const handleOpenModal = () => {
+    setModalOpen(true);
+  }
   // Function to handle closing the modal
   const handleCloseModal = () => {
     setModalOpen(false);
@@ -93,6 +97,7 @@ const Meeting = (props) => {
   const [meetingTaskId, setMeetingTaskId] = useState("")
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar toggle state
   const isSmallScreen = useMediaQuery("(max-width: 768px)");
+  const [isImageModalOpen, setImageModalOpen] = useState(false);
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
@@ -107,7 +112,7 @@ const Meeting = (props) => {
   // imageSrc contains image data to be processed and sent
   // with meeting_ocr request.
   const [imageSrc, setImageSrc] = useState("");
-  console.log(imageSrc,"uploaded image")
+  //console.log(imageSrc,"uploaded image")
   // crop is an object used in cropping image.
   const [crop, setCrop] = useState({
     unit: "%", // Can be 'px' or '%'
@@ -400,6 +405,8 @@ const handleSubmit = async (e) => {
     meeting_tasks: [] // Prepare to hold task IDs
   };
 
+  console.log("Image URL : ", notesImage);
+
   const submitMeeting = () => {
     let updatedMeeting = meeting;
     updatedMeeting["created_by"] = getCookie("user-id");
@@ -480,6 +487,13 @@ const handleSubmit = async (e) => {
     setType("");
     setTypeSync([
       false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
     ]);
     setAttendeeIds([]);
     setAttendees([]);
@@ -583,6 +597,7 @@ const handleSubmit = async (e) => {
       const reader = new FileReader();
       reader.onload = () => {
         setImageSrc(reader.result);
+        setUploadedImageUrl(reader.result);
       }
       reader.readAsDataURL(e.target.files[0]);
     }
@@ -743,6 +758,9 @@ const handleSubmit = async (e) => {
     setNotesImage(null);
   }
 
+  const openImageModal = () => setImageModalOpen(true);
+  const closeImageModal = () => setImageModalOpen(false);
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'auto' }}>
       {/* TopBar */}
@@ -792,28 +810,40 @@ const handleSubmit = async (e) => {
           padding: "20px", // Adjust padding if needed
         }}>
         <Card className="outer-card" style={{padding:"50px"}}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+        <div style={{ display: "flex", alignItems: isSmallScreen ? "auto" : "center", justifyContent: "space-between", marginBottom: "20px"}}>
+        {!isSmallScreen && (
           <Button
             variant="outline"
             color = "#65729e"
             onClick={handleBackClick}
-            style={{ marginBottom: "0" }}
+            style={{ marginBottom: "0", marginLeft: isSmallScreen ? "0px" : "auto" }}
           >
             Back
           </Button>
-          <Title order={1} ta = "center" flex= "1">
+        )}
+          <Title order={isSmallScreen ? 2 : 1} ta = "center" flex= "1">
             Meeting Details
           </Title>
         </div>
+        {isSmallScreen && (
+        <Button
+            variant="outline"
+            color = "#65729e"
+            onClick={handleBackClick}
+            style={{ maxWidth: "75px", marginBottom: "0", marginLeft: isSmallScreen ? "0px" : "auto" }}
+          >
+            Back
+          </Button>
+          )}
           <Card.Section>
-            <Card style={{maxWidth: "80%", position: "relative", left: "15%",  padding:"50px"}} className="my-card">
+            <Card style={{maxWidth: "100%", position: "relative", padding:"50px"}} className="my-card">
               <Card.Section className="my-card-body">
-                <Row style={{left:'20px', position: "relative", textAlign: "center"}}>
+                <Row style={{left:isSmallScreen ? '0' : '20px', position: "relative", textAlign: "center"}}>
                   <input type="file" hidden ref={imageRef} onChange={onImageChange} />
                   {
                     isInFirstScanState ?
                       <div>
-                        <Card className="outer-card" style={{ color: customTheme.text }}>
+                        <Card ta="center" className="outer-card" style={{ color: customTheme.text,  }}>
                           <Card.Section>
                           <div style={{ marginBottom: '10px' , padding:"10px"}}>
                           {isLoading &&<CircularProgress className="circular-progress" />}
@@ -827,21 +857,38 @@ const handleSubmit = async (e) => {
                             </Button>
                             </div>
                             <div>
-                            {imageSrc && <img src={imageSrc}  alt="Uploaded" style={{ width: '20%', height: 'auto',cursor: "pointer"}} onClick={() => handleImageClick(imageSrc)}  />}
+                            {imageSrc && <img src={imageSrc}  alt="Uploaded" style={{ width: '20%', height: 'auto',cursor: "pointer"}} onClick={handleOpenModal}  />}
                             </div>
                           </Card.Section>
                         </Card>
-                      {/* Modal to display the enlarged image */}
-                      <Modal isOpen={modalOpen} toggle={handleCloseModal}>
-                        <Modal.Section>
-                          <img src={uploadedImageUrl} alt="Uploaded" style={{ width: "100%", height: "auto" }} />
-                        </Modal.Section>
+                        <Modal 
+                          opened={modalOpen} 
+                          onClose={handleCloseModal}
+                          title={<strong>Uploaded Image</strong>}
+                          size={'xl'}
+                          overlayProps={{
+                            backgroundOpacity: 0.55,
+                            blur: 3,
+                          }}
+                        >
+                          <img 
+                            src={uploadedImageUrl} 
+                            alt="Uploaded" 
+                            style={{
+                              width: "100%",
+                              height: "auto",
+                              borderRadius: "8px",
+                              border: "1px solid #ccc",
+                            }}
+
+                          />
                       </Modal>
+                      
                       </div>
                       :
                       <div>
                         {!!imageSrc && (
-                          <ReactCrop crop={crop} onChange={(crop, percentCrop) => setCrop(percentCrop)}>
+                          <ReactCrop crop={crop} onChange={(crop, percentCrop) => setCrop(percentCrop)} style={{maxWidth: "40%"}}>
                             <img id="img-elem" src={imageSrc} alt="Crop me." />
                           </ReactCrop>
                         )}
@@ -1130,6 +1177,7 @@ const handleSubmit = async (e) => {
                             src={displayImage}
                             alt="Uploaded"
                             style={{ maxWidth: '100%', height: 'auto', borderRadius: '8px', border: '1px solid #ccc' }}
+                            onClick={openImageModal}
                           />
                           <Group position="right" style={{ marginTop: '0.5rem' }}>
                             <Button variant="outline" color="red" size="xs" onClick={clearImage}>
@@ -1139,6 +1187,28 @@ const handleSubmit = async (e) => {
                         </div>
                         )}
                       </Col>
+                      {/* Modal for Enlarged Image View */}
+                      <Modal
+                        opened={isImageModalOpen}
+                        onClose={closeImageModal}
+                        title={<strong>Uploaded Notes Image</strong>}
+                        size={'xl'}
+                        overlayProps={{
+                          backgroundOpacity: 0.55,
+                          blur: 3,
+                        }}
+                      >
+                        <img
+                          src={displayImage}
+                          alt="Uploaded Full Screen"
+                          style={{
+                            width: "100%",
+                            height: "auto",
+                            borderRadius: "8px",
+                            border: "1px solid #ccc",
+                          }}
+                        />
+                      </Modal>
                     </FormGroup>
                     </Col>
                     <Col>

@@ -186,7 +186,7 @@ const PaymentHistory = () => {
                 marginBottom: "20px",
               }}
             >
-              <Title order={1} ml={10} style={{ marginBottom: "20px" }}>
+              <Title order={isSmallScreen ? 2 : 1} ml={10} style={{ marginBottom: "20px" }}>
               Payment History
             </Title>
               <Button mb={20} variant="filled" color="#6776ab" onClick={toggleCreatePaymentForm}>Update Payment Method</Button>
@@ -240,7 +240,7 @@ const PaymentHistory = () => {
       </div>
 
       <Modal
-        title="Update Payment Method"
+        title={<strong style={{ fontSize: "20px"}}>Update Payment Method</strong>}
         opened={showCreatePaymentForm}
         onClose={toggleCreatePaymentForm}
         overlayProps={{
@@ -266,7 +266,7 @@ const PaymentHistory = () => {
       </Modal>
 
       <Modal
-        title="Card Details"
+        title={<strong style={{ fontSize: "20px"}}>Card Details</strong>}
         opened={showCardDetailsModal}
         onClose={toggleCardDetailsModal}
         overlayProps={{
