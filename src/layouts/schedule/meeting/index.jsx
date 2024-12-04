@@ -776,7 +776,7 @@ const handleSubmit = async (e) => {
               width: '0px',
               backgroundColor: '#f4f4f4',
               height: '100vh',
-              position: isSmallScreen ? 'fixed' : 'relative', // Fixed for small screens, relative for large screens
+              position: 'fixed', // Fixed for small screens, relative for large screens
               top: 0,
               left: 0,
               zIndex: isSmallScreen ? 999 : 'auto', // Higher z-index for small screens
