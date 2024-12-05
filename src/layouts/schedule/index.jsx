@@ -182,10 +182,10 @@ const Schedule = () => {
                 width: '150px',
                 backgroundColor: '#f4f4f4',
                 height: '100vh',
-                position: isSmallScreen ? 'fixed' : 'relative',
+                position: 'fixed',
                 top: 0,
                 left: 0,
-                zIndex: isSmallScreen ? 999 : 999, // Higher z-index for small screens
+                zIndex: 999, // Higher z-index for small screens
                 transition: 'transform 0.3s ease', // Smooth open/close
               }}
             >
@@ -200,8 +200,7 @@ const Schedule = () => {
               overflow: "auto",
               backgroundColor: "#f5f5f5",
               marginTop: "40px",
-              marginLeft: isSmallScreen ? "auto" : "20px",
-              marginRight: isSmallScreen ? "auto" : "0",
+              marginLeft: isSidebarOpen ? "150px" : "0px",
             }}
           >
           <Card style={{ minHeight: "calc(100vh - 32px)" }}>
