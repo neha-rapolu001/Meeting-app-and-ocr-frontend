@@ -613,27 +613,30 @@ const handleSubmit = async (e) => {
    * send POST request to meeting view that makes call to
    * OCR api. Currently logs response text in console.
    */
-  const handleOCRRequest = () => {
+  const handleOCRRequest = async () => {
     console.log("came to handleOCR");
     
     const imgElem = document.getElementById("img-elem")
     const croppedImageCanvas = document.createElement("canvas");
-    croppedImageCanvas.width = 0.01 * crop.width * imgElem.naturalWidth;
-    croppedImageCanvas.height = 0.01 * crop.height * imgElem.naturalHeight;
+    // Resize and crop the image before sending it for OCR
+    const croppedWidth = crop.width * imgElem.naturalWidth / 100;
+    const croppedHeight = crop.height * imgElem.naturalHeight / 100;
+    croppedImageCanvas.width = croppedWidth;
+    croppedImageCanvas.height = croppedHeight;
     const croppedImageContext = croppedImageCanvas.getContext("2d");
     croppedImageContext.drawImage(
       imgElem,
-      0.01 * crop.x * imgElem.naturalWidth,
-      0.01 * crop.y * imgElem.naturalHeight,
-      0.01 * crop.width * imgElem.naturalWidth,
-      0.01 * crop.height * imgElem.naturalHeight,
+      crop.x * imgElem.naturalWidth / 100,
+      crop.y * imgElem.naturalHeight / 100,
+      croppedWidth,
+      croppedHeight,
       0,
       0,
-      0.01 * crop.width * imgElem.naturalWidth,
-      0.01 * crop.height * imgElem.naturalHeight,
+      croppedWidth,
+      croppedHeight
     );
 
-    const croppedImage = new Promise(
+    const croppedImage = await new Promise(
       (resolve, reject) => {
         croppedImageCanvas.toBlob(
           blob => {resolve(blob);},
@@ -643,8 +646,8 @@ const handleSubmit = async (e) => {
     );
 
     const reader = new FileReader();
-    setIsLoading(true);
     reader.onload = async () => {
+      setIsLoading(true);
       const response = await meeting_ocr({image_binary : new Uint8Array(reader.result)}).then(setIsLoading(false) )
         .catch((error) => {
           console.log(error);
@@ -653,10 +656,7 @@ const handleSubmit = async (e) => {
       setName(response.data.name_date);
       setAgenda(response.data.agenda);
       setDate(response.data.date);
-      if(!response.data.time){
-       setTime("10:00");
-      }
-      console.log(response);
+      setTime(response.data.time || '10:00');
       setNotes(response.data.notes);
       setObjective(response.data.objective);
       setQuestions(response.data.questions);
@@ -707,7 +707,7 @@ const handleSubmit = async (e) => {
 
     }
     
-    croppedImage.then(res => reader.readAsArrayBuffer(res));
+    reader.readAsArrayBuffer(croppedImage);
     toggleScanState();
     setIsLoading(false);
   }
@@ -776,7 +776,7 @@ const handleSubmit = async (e) => {
               width: '0px',
               backgroundColor: '#f4f4f4',
               height: '100vh',
-              position: 'fixed', // Fixed for small screens, relative for large screens
+              position: isSmallScreen ? 'fixed' : 'relative', // Fixed for small screens, relative for large screens
               top: 0,
               left: 0,
               zIndex: isSmallScreen ? 999 : 'auto', // Higher z-index for small screens
