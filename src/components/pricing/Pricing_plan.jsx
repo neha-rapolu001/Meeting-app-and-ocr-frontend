@@ -31,13 +31,13 @@ const Pricing_plan = () => {
     <Container
       style={{
         minWidth: "100vw",
-        height: "100vh",
+        minHeight: "100vh",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         background: "linear-gradient(135deg, #8490bd, #dae0f7)",
         position: "relative",
-        overflow: "hidden",
+        overflow: "auto",
       }}
     >
       {/* Background overlay circles */}
@@ -73,9 +73,13 @@ const Pricing_plan = () => {
           padding: 40,
           background: "white",
           boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
-          borderRadius: "45%",
+          borderRadius: isSmallScreen ? "35%" : "45%",
           textAlign: "center",
           zIndex: 2,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
           position: "relative",
         }}
       >
@@ -92,7 +96,8 @@ const Pricing_plan = () => {
               radius="md"
               style={{
                 width: "100%",
-                maxWidth: 500,
+                maxWidth: isSmallScreen ? 200 : 500,
+                maxHeight: isSmallScreen ? 250 : 500,
                 textAlign: "center",
                 backgroundColor: "#edf1fc",
               }}

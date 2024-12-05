@@ -151,10 +151,10 @@ const Dashboard = () => {
                 width: '150px',
                 backgroundColor: '#f4f4f4',
                 height: '100vh',
-                position: isSmallScreen ? 'fixed' : 'relative', // Fixed for small screens, relative for large screens
+                position: 'fixed',
                 top: 0,
                 left: 0,
-                zIndex: isSmallScreen ? 999 : 'auto', // Higher z-index for small screens
+                zIndex: 999, // Higher z-index for small screens
                 transition: 'transform 0.3s ease', // Smooth open/close
               }}
             >
@@ -163,7 +163,7 @@ const Dashboard = () => {
           )}
 
       {/* Main Content */}
-      <div style={{ flex: 1, padding: "2rem", marginTop:'45px' }}>
+      <div style={{ flex: 1, padding: "2rem", marginTop:'45px', marginLeft: isSidebarOpen ? "150px" : "0px", }}>
         <Grid gutter="md" style={{ padding: 0 }}>
           {/* Active Tasks Card */}
           <Grid.Col span={{ xs: '12', sm: '4', md: '4', lg: '4' }}>
@@ -205,15 +205,15 @@ const Dashboard = () => {
           </Grid.Col>
 
           {/* Tasks Due Soon Table */}
-          <Grid.Col span={{ xs: '12', sm: '12', md: '6', lg: '4' }}>
-            <Card shadow="lg" style={{ padding: "20px", borderRadius: "8px", minHeight: "650px", backgroundColor: "#f2f4fa" }}>
+          <Grid.Col span={{ xs: '12', sm: '12', md: '5', lg: '4' }}>
+            <Card shadow="lg" style={{ padding: "20px", borderRadius: "8px", minHeight: "600px", backgroundColor: "#f2f4fa" }}>
               <TasksDueSoonTable mustGetTasks={mustGetTasks} setMustGetTasks={setMustGetTasks} />
             </Card>
           </Grid.Col>
 
           {/* Calendar Section */}
-          <Grid.Col span={{ xs: '12', sm: '12', md: '6', lg: '8' }}>
-            <Card shadow="lg" style={{ padding: "20px", borderRadius: "8px", minHeight: "600px", backgroundColor: "#f2f4fa" }}>
+          <Grid.Col span={{ xs: '12', sm: '12', md: '7', lg: '8' }}>
+            <Card shadow="lg" style={{ padding: "20px", borderRadius: "8px", minHeight: "650px", backgroundColor: "#f2f4fa" }}>
               <Title order={4} style={{ marginLeft: "20px", marginBottom: "0", color: "#4A4A4A" }}>
                 Calendar
               </Title>

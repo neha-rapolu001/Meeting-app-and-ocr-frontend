@@ -133,10 +133,10 @@ const Task = () => {
                 width: '150px',
                 backgroundColor: '#f4f4f4',
                 height: '100vh',
-                position: isSmallScreen ? 'fixed' : 'relative', // Fixed for small screens, relative for large screens
+                position: 'fixed', // Fixed for small screens, relative for large screens
                 top: 0,
                 left: 0,
-                zIndex: isSmallScreen ? 999 : 'auto', // Higher z-index for small screens
+                zIndex: 999, // Higher z-index for small screens
                 transition: 'transform 0.3s ease', // Smooth open/close
               }}
             >
@@ -151,8 +151,7 @@ const Task = () => {
               overflow: "auto",
               backgroundColor: "#f5f5f5",
               marginTop: "40px",
-              marginLeft: isSmallScreen ? "auto" : "20px",
-              marginRight: isSmallScreen ? "auto" : "0",
+              marginLeft: isSidebarOpen ? "150px" : "0px",
             }}
           >
           <Card style={{ minHeight: "calc(100vh - 32px)" }}>

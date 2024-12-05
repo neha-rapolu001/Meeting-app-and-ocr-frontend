@@ -776,10 +776,10 @@ const handleSubmit = async (e) => {
               width: '0px',
               backgroundColor: '#f4f4f4',
               height: '100vh',
-              position: isSmallScreen ? 'fixed' : 'relative', // Fixed for small screens, relative for large screens
+              position: 'fixed', // Fixed for small screens, relative for large screens
               top: 0,
               left: 0,
-              zIndex: isSmallScreen ? 999 : 'auto', // Higher z-index for small screens
+              zIndex: 999, // Higher z-index for small screens
               transition: 'transform 0.3s ease', // Smooth open/close
             }}
           >
@@ -808,6 +808,7 @@ const handleSubmit = async (e) => {
           width: isSmallScreen ? "auto" : "80%", // Ensures the layout adapts to screen size
           margin: "0 auto", // Centers the container
           padding: "20px", // Adjust padding if needed
+          marginLeft: isSidebarOpen ? "150px" : "0px",
         }}>
         <Card className="outer-card" style={{padding:"50px"}}>
         <div style={{ display: "flex", alignItems: isSmallScreen ? "auto" : "center", justifyContent: "space-between", marginBottom: "20px"}}>
