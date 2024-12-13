@@ -206,7 +206,7 @@ const Dashboard = () => {
 
           {/* Tasks Due Soon Table */}
           <Grid.Col span={{ xs: '12', sm: '12', md: '5', lg: '4' }}>
-            <Card shadow="lg" style={{ padding: "20px", borderRadius: "8px", minHeight: "600px", backgroundColor: "#f2f4fa" }}>
+            <Card shadow="lg" style={{ padding: "20px", borderRadius: "8px", minHeight: "650px", backgroundColor: "#f2f4fa" }}>
               <TasksDueSoonTable mustGetTasks={mustGetTasks} setMustGetTasks={setMustGetTasks} />
             </Card>
           </Grid.Col>

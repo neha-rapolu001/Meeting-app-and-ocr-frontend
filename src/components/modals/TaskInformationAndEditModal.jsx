@@ -7,7 +7,8 @@ import {
   Switch,
   Text,
   Group,
-  MultiSelect
+  MultiSelect,
+  Textarea
 } from "@mantine/core";
 import { tasks_update, task_view, getCookie, person_view, isSuperUser, isLeader, meeting_view, get_users, get_church_data} from "../../api";
 import AddPersonModal from "./AddPersonModal";
@@ -188,8 +189,9 @@ const TaskInformationAndEditModal = ({ isOpen, toggle, id, task }) => {
     <Modal 
       opened={isOpen} 
       onClose={toggle} 
-      title={<strong style={{fontSize:"22px"}}> {formData.task_name || "Task Details"} </strong>}
+      title={<strong style={{fontSize:"20px"}}> {formData.task_name || "Task Details"} </strong>}
       size="lg"
+      padding="lg"
       overlayProps={{
         backgroundOpacity: 0.55,
         blur: 3,
@@ -205,9 +207,9 @@ const TaskInformationAndEditModal = ({ isOpen, toggle, id, task }) => {
             error={errors.task_name}
             required
             size="md"
-          style={{ marginBottom: '1rem' }}
+            style={{ marginBottom: '1rem' }}
           />
-          <TextInput
+          <Textarea
             label="Task Description"
             name="task_description"
             value={formData.task_description}
@@ -215,6 +217,9 @@ const TaskInformationAndEditModal = ({ isOpen, toggle, id, task }) => {
             required
             size="md"
             style={{ marginBottom: '1rem' }}
+            autosize
+            minRows={4}
+            maxRows={4}
           />
           <MultiSelect
             label="Employee(s)"
@@ -297,7 +302,7 @@ const TaskInformationAndEditModal = ({ isOpen, toggle, id, task }) => {
             size="md"
           />
           <Group position="apart" mt="md">
-            <Button type="submit">Save Task</Button>
+            <Button type="submit">Save Task and Notify</Button>
             <Button color="gray" onClick={toggle}>
               Close
             </Button>

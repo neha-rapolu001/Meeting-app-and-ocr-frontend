@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { tasks_update, person_view, getCookie } from "../../api";
-import { Button, TextInput, Switch, MultiSelect, Modal, Group, Text, Select, Title } from "@mantine/core";
+import { Button, TextInput, Switch, MultiSelect, Modal, Group, Text, Select, Title, Textarea } from "@mantine/core";
 import AddPersonModal from "./AddPersonModal";
 
 const EditTaskModal = ({ isOpen, toggle, id }) => {
@@ -136,16 +136,17 @@ const EditTaskModal = ({ isOpen, toggle, id }) => {
     >
       <form onSubmit={handleSubmit}>
         <TextInput
-          label="Task Name *"
+          label="Task Name"
           placeholder="Enter task name"
           name="task_name"
           value={formData.task_name}
           onChange={handleChange}
           error={errors.task_name}
-          size="md" // Increase size of the input
+          size="md"
           style={{ marginBottom: '1rem' }}
+          required
         />
-        <TextInput
+        <Textarea
           label="Task Description"
           placeholder="Enter task description"
           name="task_description"
@@ -154,9 +155,13 @@ const EditTaskModal = ({ isOpen, toggle, id }) => {
           error={errors.task_description}
           size="md"
           style={{ marginBottom: '1rem' }}
+          required
+          autosize
+          minRows={4}
+          maxRows={4}
         />
         <MultiSelect
-          label="Employee(s) *"
+          label="Employee(s)"
           data={people.map((person) => ({
             value: person.id?.toString(),
             label: person.name || "Unnamed Person",
@@ -182,9 +187,10 @@ const EditTaskModal = ({ isOpen, toggle, id }) => {
           error={errors.employees}
           size="md"
           style={{ marginBottom: '1rem' }}
+          required
         />
         <TextInput
-          label="Start Date *"
+          label="Start Date"
           placeholder="Select start date"
           name="start_date"
           type="date"
@@ -193,9 +199,10 @@ const EditTaskModal = ({ isOpen, toggle, id }) => {
           error={errors.start_date}
           size="md"
           style={{ marginBottom: '1rem' }}
+          required
         />
         <TextInput
-          label="End Date *"
+          label="End Date"
           placeholder="Select end date"
           name="end_date"
           type="date"
@@ -204,6 +211,7 @@ const EditTaskModal = ({ isOpen, toggle, id }) => {
           error={errors.end_date}
           size="md"
           style={{ marginBottom: '1rem' }}
+          required
         />
         <Group position="apart" style={{ marginBottom: '1rem' }}>
           <Text weight={500} size="md" fw={500}>Is Completed</Text>
@@ -217,7 +225,7 @@ const EditTaskModal = ({ isOpen, toggle, id }) => {
 
         {/* Dropdown for Task Priority */}
         <Select
-          label="Task Priority *"
+          label="Task Priority"
           value={formData.priority}
           onChange={(value) => setFormData({ ...formData, priority: value })}
           data={[
@@ -229,6 +237,7 @@ const EditTaskModal = ({ isOpen, toggle, id }) => {
           placeholder="Select priority"
           size="md"
           style={{ marginBottom: '1rem' }}
+          required
         />
 
         <Button
@@ -238,7 +247,7 @@ const EditTaskModal = ({ isOpen, toggle, id }) => {
           style={{ marginTop: '1rem' }}
           size="md" // Make the button bigger
         >
-          Save Task
+          Save Task And Notify
         </Button>
       </form>
       <Button

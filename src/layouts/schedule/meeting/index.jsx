@@ -39,7 +39,8 @@ import {
   getCookie,
   isSuperUser,
   add_person,
-  tasks_update
+  tasks_update,
+  uploadImage
 } from '../../../api.js';
 import AppSidebar from "../../../components/appSidebar/index.jsx";
 import InvitePeopleModal from "../../../components/modals/InvitePeopleModal.js";
@@ -98,6 +99,8 @@ const Meeting = (props) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar toggle state
   const isSmallScreen = useMediaQuery("(max-width: 768px)");
   const [isImageModalOpen, setImageModalOpen] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState('');
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
@@ -161,6 +164,7 @@ const Meeting = (props) => {
   const imageRef = useRef(null);
 
   useEffect(() => {
+    console.log("State Object:", state);
     
     fetchPeople();
     if (state.clearForm) {
@@ -194,6 +198,7 @@ const Meeting = (props) => {
       setObjective(state.meeting.objective);
       setAttendeeIds(state.meeting.attendees);
       //setNotesImage(state.meeting.notes_image);
+      setImageUrl(state.meeting.notes_image);
       setDisplayImage(state.meeting.notes_image);
       console.log("Display Image: ",displayImage);
       //console.log("Image: ",state.meeting.notes_image);
@@ -226,7 +231,7 @@ const Meeting = (props) => {
       let persons = [];
       // fetch all meetings then push those who are attendees
       // of this meeting to attendeesArray
-      person_view()
+      person_view(getCookie("church"))
         .then((res) => {
           persons = res.data;
         })
@@ -398,7 +403,7 @@ const handleSubmit = async (e) => {
     attendees: attendeeIds,
     agenda: agenda,
     notes: notes,
-    notes_image: notesImage || null,
+    notes_image: imageUrl || null,
     questions: questions,
     action_steps : actionSteps,
     objective: objective,
@@ -406,9 +411,10 @@ const handleSubmit = async (e) => {
   };
 
   console.log("Image URL : ", notesImage);
+  console.log("Image URL (new): ", imageUrl);
 
   const submitMeeting = () => {
-    let updatedMeeting = meeting;
+    let updatedMeeting = { ...meeting };
     updatedMeeting["created_by"] = getCookie("user-id");
     updatedMeeting["church"] = getCookie("church");
     if (meetingId === "") {
@@ -736,7 +742,7 @@ const handleSubmit = async (e) => {
     setAddPersonModalOpen(!addPersonModalOpen);
   };
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload =  async (e) => {
     const file = e.target.files[0];
     console.log("File: ", file); // This will show the selected file
 
@@ -748,6 +754,8 @@ const handleSubmit = async (e) => {
         reader.onload = () => {
             setDisplayImage(reader.result); // Base64 string for preview
         };
+        const url = await uploadImage(file); // Upload image and get URL
+        setImageUrl(url.data.url);
         reader.readAsDataURL(file);
     }
 };
@@ -1412,7 +1420,7 @@ const handleSubmit = async (e) => {
                           onClick={handleSubmit}
                           
                         > 
-                          Save
+                          Save and Notify
                         </Button>}
                         <Button
                         variant="filled"

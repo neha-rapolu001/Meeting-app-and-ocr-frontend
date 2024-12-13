@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { tasks_create, getCookie, person_view } from "../../api";
-import { Button, TextInput, Switch, MultiSelect, Modal, Group, Text, Select, Title } from "@mantine/core";
+import { Button, TextInput, Switch, MultiSelect, Modal, Group, Text, Select, Title, Textarea } from "@mantine/core";
 import AddPersonModal from "./AddPersonModal";
 
 const CreateTaskModal = ({ isOpen, toggle }) => {
@@ -75,7 +75,9 @@ const CreateTaskModal = ({ isOpen, toggle }) => {
     if (!formData.task_name.trim()) {
       validationErrors.task_name = 'Task name is required.';
     }
-
+    if (!formData.task_description) {
+      validationErrors.task_description = 'Task description is required' ;
+    }
     // Validation for employee name
     if (!formData.employees.length) {
       validationErrors.employees = 'Employee(s) are required.';
@@ -121,8 +123,8 @@ const CreateTaskModal = ({ isOpen, toggle }) => {
         blur: 3,
       }}
       title={<strong style={{fontSize:"20px"}}>Create Task</strong>}
-      size="lg" // Make the modal larger
-      padding="lg" // Add extra padding inside the modal
+      size="lg"
+      padding="lg"
     >
       <form onSubmit={handleSubmit}>
         <TextInput
@@ -132,11 +134,11 @@ const CreateTaskModal = ({ isOpen, toggle }) => {
           value={formData.task_name}
           onChange={handleChange}
           error={errors.task_name}
-          size="md" // Increase size of the input
+          size="md"
           style={{ marginBottom: '1rem' }}
           required
         />
-        <TextInput
+        <Textarea
           label="Task Description"
           placeholder="Enter task description"
           name="task_description"
@@ -146,6 +148,9 @@ const CreateTaskModal = ({ isOpen, toggle }) => {
           size="md"
           style={{ marginBottom: '1rem' }}
           required
+          autosize
+          minRows={4}
+          maxRows={4}
         />
         <MultiSelect
           label="Employee(s)"
@@ -234,7 +239,7 @@ const CreateTaskModal = ({ isOpen, toggle }) => {
           style={{ marginTop: '1rem' }}
           size="md" // Make the button bigger
         >
-          Create Task
+          Create Task and Notify
         </Button>
       </form>
       <Button

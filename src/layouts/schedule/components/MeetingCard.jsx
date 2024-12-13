@@ -62,7 +62,7 @@ const MeetingCard = (props) => {
       attendees: props.meeting.attendees,
       agenda: props.meeting.agenda,
       notes: props.meeting.notes,
-      notes_image: props.meeting.notes_image,
+      notes_image: props.meeting.notes_image || null,
       questions: props.meeting.questions,
       action_steps: props.meeting.action_steps,
       objective: props.meeting.objective,
@@ -77,6 +77,7 @@ const MeetingCard = (props) => {
         console.log("Meeting duplicated successfully");
       })
       .catch((error) => {
+        console.log(meeting);
         console.error("Error duplicating meeting:", error.response?.data || error.message);
       });
       setIsDuplicateModalOpen(!isDuplicateModalOpen);
@@ -130,8 +131,10 @@ const MeetingCard = (props) => {
 
   // Handle the top section click to open the modal
   const handleEventClick = () => {
-    setSelectedMeeting(props.meeting); // Set the selected meeting
-    toggleMeetingInfoModal(!isDeleteMeetingModalOpen);
+    if (!isDuplicateModalOpen && !isDeleteMeetingModalOpen) {
+      setSelectedMeeting(props.meeting); // Set the selected meeting
+      toggleMeetingInfoModal(); // Open the Meeting Information modal
+    }
   };
 
   const handleDuplicateMeeting = (event) => {
